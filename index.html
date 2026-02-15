@@ -110,7 +110,7 @@
             50% { transform: translateY(-10px); }
         }
 
-        /* ===== NEW LOGIN PAGE STYLES ===== */
+        /* ===== LOGIN SCREEN ONLY STYLES ===== */
         .coins-container {
             position: fixed;
             top: 0;
@@ -120,6 +120,11 @@
             pointer-events: none;
             overflow: hidden;
             z-index: 0;
+            display: none; /* Hidden by default, shown only on auth screen */
+        }
+
+        #auth-screen .coins-container {
+            display: block; /* Only show on login screen */
         }
 
         .coin {
@@ -168,7 +173,11 @@
             align-items: center;
             min-height: 100vh;
             background: linear-gradient(135deg, #121212 0%, #1a0f00 50%, #121212 100%);
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
         }
 
         .auth-box {
@@ -540,7 +549,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 100;
+            z-index: 10000;
         }
 
         .success-check.show {
@@ -570,7 +579,7 @@
             color: white;
         }
 
-        /* ===== END NEW LOGIN STYLES ===== */
+        /* ===== END LOGIN STYLES ===== */
 
         header {
             background: var(--bg-card);
@@ -1135,8 +1144,15 @@
         <button class="btn" style="margin-top: 30px; width: auto; padding: 10px 40px;" onclick="window.closePopup()">OK</button>
     </div>
 
-    <!-- Coin Rain Background -->
+    <!-- Coin Rain Background - ONLY FOR LOGIN SCREEN -->
     <div class="coins-container" id="coins-container"></div>
+
+    <!-- Success Animation -->
+    <div class="success-check" id="success-check">
+        <div class="check-circle">
+            <i class="fas fa-check"></i>
+        </div>
+    </div>
 
     <!-- NEW LOGIN SCREEN -->
     <div id="auth-screen">
@@ -1185,13 +1201,6 @@
             <div class="auth-toggle" onclick="window.toggleAuthMode()">
                 <span id="toggle-text">Don't have an account? Signup</span>
             </div>
-        </div>
-    </div>
-
-    <!-- Success Animation -->
-    <div class="success-check" id="success-check">
-        <div class="check-circle">
-            <i class="fas fa-check"></i>
         </div>
     </div>
 
@@ -1749,27 +1758,77 @@
         let serverTimeOffset = 0;
         let priceUpdateInterval = null;
         let zigzagInterval = null;
+        let lastPriceChangeSound = 0;
+        let coinRainInterval = null;
 
-        // ===== COIN RAIN SYSTEM =====
+        // ===== SOUND EFFECTS =====
+        window.playSound = (type) => {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                osc.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, ctx.currentTime);
+                    gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } else if (type === 'priceUp') {
+                    // High pitch ding for price up
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1600, ctx.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.2);
+                } else if (type === 'priceDown') {
+                    // Lower pitch for price down
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.2);
+                }
+            } catch(e) {
+                console.log('Sound error:', e);
+            }
+        }
+
+        // ===== COIN RAIN SYSTEM - LOGIN SCREEN ONLY =====
         const coinIcons = ['fa-coins', 'fa-coin', 'fa-bitcoin', 'fa-ethereum'];
         
         function createCoin() {
             const container = document.getElementById('coins-container');
-            const coin = document.createElement('i');
+            if (!container || container.style.display === 'none') return;
             
+            const coin = document.createElement('i');
             const randomIcon = coinIcons[Math.floor(Math.random() * coinIcons.length)];
             coin.className = `fas ${randomIcon} coin`;
             
             coin.style.left = Math.random() * 100 + '%';
-            
             const size = Math.random() * 20 + 15;
             coin.style.fontSize = size + 'px';
             
             const duration = Math.random() * 4 + 5;
             coin.style.animationDuration = duration + 's';
-            
             coin.style.animationDelay = Math.random() * 3 + 's';
-            
             coin.style.opacity = Math.random() * 0.4 + 0.2;
             
             const colors = ['#ff6600', '#ff9100', '#ffb74d', '#ffcc80'];
@@ -1783,15 +1842,37 @@
         }
 
         function startCoinRain() {
-            for (let i = 0; i < 25; i++) {
+            // Clear any existing interval
+            if (coinRainInterval) clearInterval(coinRainInterval);
+            
+            const container = document.getElementById('coins-container');
+            if (container) container.style.display = 'block';
+            
+            // Create initial coins
+            for (let i = 0; i < 15; i++) {
                 setTimeout(createCoin, i * 300);
             }
-            setInterval(createCoin, 1000);
+            // Continue creating coins
+            coinRainInterval = setInterval(createCoin, 1200);
+        }
+
+        function stopCoinRain() {
+            if (coinRainInterval) {
+                clearInterval(coinRainInterval);
+                coinRainInterval = null;
+            }
+            const container = document.getElementById('coins-container');
+            if (container) {
+                container.style.display = 'none';
+                container.innerHTML = ''; // Clear all coins
+            }
         }
 
         function createParticles() {
             const container = document.getElementById('coins-container');
-            for (let i = 0; i < 15; i++) {
+            if (!container) return;
+            
+            for (let i = 0; i < 10; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.style.left = Math.random() * 100 + '%';
@@ -1801,32 +1882,6 @@
                 particle.style.animationDelay = Math.random() * 5 + 's';
                 particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
                 container.appendChild(particle);
-            }
-        }
-
-        window.playSound = (type) => {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return;
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gainNode = ctx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(ctx.destination);
-            if (type === 'success') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(500, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.5);
-            } else if (type === 'error') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, ctx.currentTime);
-                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
             }
         }
 
@@ -1874,6 +1929,8 @@
                     document.getElementById('auth-screen').classList.remove('hidden');
                     document.getElementById('app-container').classList.add('hidden');
                     currentUserData = null;
+                    // Ensure coin rain is running on login screen
+                    startCoinRain();
                 }
             });
         }
@@ -1882,26 +1939,44 @@
             return Date.now() + serverTimeOffset;
         }
 
-        // ===== FIXED ZIGZAG CHART ANIMATION - WORKS IN BOTH MODES =====
+        // ===== FIXED ZIGZAG CHART WITH SOUND =====
+        let lastZigzagPrice = null;
+        
         function startZigzagAnimation() {
             if (zigzagInterval) clearInterval(zigzagInterval);
+            
+            // Initialize with current price
+            const currentPrice = getCurrentPrice();
+            if (lastZigzagPrice === null) {
+                lastZigzagPrice = currentPrice;
+            }
             
             zigzagInterval = setInterval(() => {
                 if(!marketData) return;
                 
-                // FIX: Get current price for BOTH auto and manual modes
-                let currentPrice;
-                if (marketMode === 'auto' && currentFluctuatedPrice !== null) {
-                    currentPrice = currentFluctuatedPrice / marketData.usdtRate;
-                } else {
-                    // For manual mode, use tkPrice but add small fluctuation for zigzag effect
-                    currentPrice = marketData.tkPrice;
+                // Get current base price
+                let basePrice = getCurrentPrice();
+                
+                // Create fluctuation around current price (±2%)
+                const fluctuation = (Math.random() - 0.5) * 0.04; // ±2%
+                let newPrice = basePrice * (1 + fluctuation);
+                
+                // Ensure price stays positive
+                if(newPrice < 0.1) newPrice = 0.1;
+                
+                // Play sound on significant price change (every 3 seconds max)
+                const now = Date.now();
+                if (now - lastPriceChangeSound > 3000) {
+                    if (newPrice > lastZigzagPrice * 1.01) {
+                        playSound('priceUp');
+                        lastPriceChangeSound = now;
+                    } else if (newPrice < lastZigzagPrice * 0.99) {
+                        playSound('priceDown');
+                        lastPriceChangeSound = now;
+                    }
                 }
                 
-                // Add small random fluctuation for zigzag effect (works in both modes)
-                const change = (Math.random() - 0.5) * 0.02; 
-                let newPrice = currentPrice + change;
-                if(newPrice < 0.1) newPrice = 0.1;
+                lastZigzagPrice = newPrice;
                 
                 chartPoints.push(newPrice);
                 if (chartPoints.length > 20) chartPoints.shift();
@@ -2025,6 +2100,9 @@
                         loginSuccess(currentUserData);
                     });
                 }
+            }).catch(err => {
+                console.error("DB Error:", err);
+                window.showToast("Connection error. Retrying...", "error");
             });
         }
 
@@ -2064,8 +2142,12 @@
             btn.classList.add('loading');
             
             try {
-                if (isSignup) await createUserWithEmailAndPassword(auth, email, pass);
-                else await signInWithEmailAndPassword(auth, email, pass);
+                if (isSignup) {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+                // Success - handled by onAuthStateChanged
             } catch (error) {
                 window.showToast(error.message, "error");
                 btn.classList.remove('loading');
@@ -2415,6 +2497,9 @@
         }
 
         function loginSuccess(user) {
+            // STOP coin rain when logged in
+            stopCoinRain();
+            
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
             
@@ -2536,7 +2621,7 @@
             window.loadUserSavings(user.uid);
             monitorIncomingTransfers(user.uid); 
             
-            // FIX: Start zigzag animation immediately for BOTH modes
+            // Start zigzag animation for BOTH modes
             startZigzagAnimation();
             
             loadTodayPriceHistory();
