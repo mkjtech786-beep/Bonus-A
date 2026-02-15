@@ -110,22 +110,467 @@
             50% { transform: translateY(-10px); }
         }
 
+        /* ===== NEW LOGIN PAGE STYLES ===== */
+        .coins-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .coin {
+            position: absolute;
+            color: #ff6600;
+            font-size: 20px;
+            animation: fall linear infinite;
+            opacity: 0.6;
+            text-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff6600;
+            border-radius: 50%;
+            animation: sparkle 2s linear infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
         #auth-screen {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #121212, #2a1b0d);
+            min-height: 100vh;
+            background: linear-gradient(135deg, #121212 0%, #1a0f00 50%, #121212 100%);
+            position: relative;
         }
+
         .auth-box {
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: 12px;
+            background: rgba(30, 30, 30, 0.95);
+            padding: 40px 35px;
+            border-radius: 25px;
             width: 90%;
             max-width: 400px;
-            border-top: 3px solid var(--primary);
+            border: 1px solid rgba(255, 102, 0, 0.3);
+            box-shadow: 
+                0 20px 60px rgba(255, 102, 0, 0.2),
+                0 0 100px rgba(255, 102, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+            animation: boxFloat 4s ease-in-out infinite, boxGlow 3s ease-in-out infinite alternate;
+            backdrop-filter: blur(20px);
+            transform-style: preserve-3d;
         }
-        .auth-toggle { text-align: center; margin-top: 15px; font-size: 0.9rem; cursor: pointer; color: var(--primary); }
+
+        @keyframes boxFloat {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-15px) rotateX(2deg); }
+        }
+
+        @keyframes boxGlow {
+            0% { box-shadow: 0 20px 60px rgba(255, 102, 0, 0.2), 0 0 100px rgba(255, 102, 0, 0.1); }
+            100% { box-shadow: 0 25px 70px rgba(255, 102, 0, 0.3), 0 0 120px rgba(255, 102, 0, 0.2); }
+        }
+
+        .logo-animation {
+            text-align: center;
+            margin-bottom: 35px;
+            animation: logoPop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes logoPop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            70% { transform: scale(1.1) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .coin-icon {
+            font-size: 4.5rem;
+            color: #ff6600;
+            display: block;
+            margin-bottom: 15px;
+            animation: 
+                coinSpin 3s linear infinite,
+                coinGlow 2s ease-in-out infinite alternate,
+                coinBounce 1s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 102, 0, 0.6));
+            background: linear-gradient(135deg, #ff6600, #ff9100);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes coinSpin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        @keyframes coinGlow {
+            0% { filter: drop-shadow(0 0 20px rgba(255, 102, 0, 0.5)) brightness(1); }
+            100% { filter: drop-shadow(0 0 50px rgba(255, 102, 0, 0.9)) brightness(1.3); }
+        }
+
+        @keyframes coinBounce {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(180deg); }
+        }
+
+        .app-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6600, #ff9100, #ff6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            text-shadow: 0 0 30px rgba(255, 102, 0, 0.3);
+            letter-spacing: 3px;
+            animation: textShimmer 3s linear infinite;
+            background-size: 200% auto;
+        }
+
+        @keyframes textShimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .tagline {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #auth-screen .input-group {
+            margin-bottom: 20px;
+            animation: slideInLeft 0.6s ease both;
+        }
+
+        #auth-screen .input-group:nth-child(1) { animation-delay: 0.2s; }
+        #auth-screen .input-group:nth-child(2) { animation-delay: 0.3s; }
+        #auth-screen .input-group:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        #auth-screen .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            color: #ff6600;
+            font-size: 1.1rem;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        #auth-screen .input-group input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            background: rgba(42, 42, 42, 0.8);
+            border: 2px solid #333;
+            color: white;
+            border-radius: 12px;
+            outline: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #auth-screen .input-group input:focus {
+            border-color: #ff6600;
+            box-shadow: 
+                0 0 20px rgba(255, 102, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateX(5px) scale(1.02);
+        }
+
+        #auth-screen .input-group input:focus + .input-icon,
+        .input-wrapper:focus-within .input-icon {
+            color: #ff9100;
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff6600, #ff9100);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideInUp 0.6s ease 0.5s both;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .auth-btn:hover::before {
+            left: 100%;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 15px 40px rgba(255, 102, 0, 0.4),
+                0 0 60px rgba(255, 102, 0, 0.2);
+        }
+
+        .auth-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .auth-btn:hover .btn-icon {
+            transform: translateX(5px);
+        }
+
+        .auth-btn.loading {
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .auth-btn.loading .btn-text {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .auth-btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .auth-btn.loading .btn-icon {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            color: #ff6600;
+            transition: all 0.3s ease;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            animation: fadeIn 1s ease 0.7s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .auth-toggle::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff6600, transparent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .auth-toggle:hover::after {
+            width: 80%;
+        }
+
+        .auth-toggle:hover {
+            color: #ff9100;
+            transform: scale(1.05);
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff6600;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 10s linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { 
+                transform: translate(0, 0) scale(0); 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            90% { 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translate(var(--tx), var(--ty)) scale(0); 
+                opacity: 0; 
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-box {
+                padding: 30px 20px;
+                margin: 15px;
+                border-radius: 20px;
+            }
+            
+            .coin-icon {
+                font-size: 3.5rem;
+            }
+            
+            .app-title {
+                font-size: 1.8rem;
+            }
+            
+            #auth-screen .input-group input {
+                padding: 12px 12px 12px 40px;
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .success-check {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+        }
+
+        .success-check.show {
+            display: block;
+            animation: successPop 0.6s ease;
+        }
+
+        @keyframes successPop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .check-circle {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #00c853, #00e676);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 60px rgba(0, 200, 83, 0.4);
+        }
+
+        .check-circle i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        /* ===== END NEW LOGIN STYLES ===== */
 
         header {
             background: var(--bg-card);
@@ -690,28 +1135,63 @@
         <button class="btn" style="margin-top: 30px; width: auto; padding: 10px 40px;" onclick="window.closePopup()">OK</button>
     </div>
 
+    <!-- Coin Rain Background -->
+    <div class="coins-container" id="coins-container"></div>
+
+    <!-- NEW LOGIN SCREEN -->
     <div id="auth-screen">
-        <div class="auth-box">
-            <h2 class="text-orange" style="text-align: center; margin-bottom: 20px;">TK Coin Login</h2>
+        <div class="auth-box" id="auth-box">
+            <!-- Logo Animation -->
+            <div class="logo-animation">
+                <i class="fas fa-coins coin-icon"></i>
+                <h1 class="app-title">TK Coin</h1>
+                <p class="tagline">Hold & Earn</p>
+            </div>
+            
+            <!-- Login Form -->
             <form id="auth-form">
                 <div class="input-group">
-                    <label>Email</label>
-                    <input type="email" id="auth-email" required placeholder="user@example.com">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="auth-email" required placeholder="user@example.com" autocomplete="email">
+                    </div>
                 </div>
+                
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="auth-pass" required placeholder="password">
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="auth-pass" required placeholder="••••••••" autocomplete="current-password">
+                    </div>
                 </div>
+                
                 <div class="input-group hidden" id="ref-group">
                     <label>Referral Code (Optional)</label>
-                    <input type="text" id="auth-ref" placeholder="Enter Referral Code">
+                    <div class="input-wrapper">
+                        <i class="fas fa-gift input-icon"></i>
+                        <input type="text" id="auth-ref" placeholder="Enter Referral Code">
+                    </div>
                 </div>
-                <button type="submit" class="btn" id="auth-btn">Login</button>
+                
+                <button type="submit" class="auth-btn" id="auth-btn">
+                    <span class="btn-text">Login</span>
+                    <div class="spinner"></div>
+                    <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
             </form>
-            <div class="auth-toggle" onclick="window.toggleAuthMode()">Don't have an account? Signup</div>
-            <div style="margin-top: 15px; font-size: 0.8rem; color: #666; text-align: center;">
-                For your security, make sure your login details are correct. Never share your password with anyone..
+            
+            <!-- Toggle Link -->
+            <div class="auth-toggle" onclick="window.toggleAuthMode()">
+                <span id="toggle-text">Don't have an account? Signup</span>
             </div>
+        </div>
+    </div>
+
+    <!-- Success Animation -->
+    <div class="success-check" id="success-check">
+        <div class="check-circle">
+            <i class="fas fa-check"></i>
         </div>
     </div>
 
@@ -809,7 +1289,7 @@
                             <div class="portfolio-value" id="portfolio-total-invested">0 PKR</div>
                         </div>
                         <div class="portfolio-item">
-                            <div class="portfolio-label">Net P/L</div>
+                            <div class="portfolio-label">Net P/L (With All Balance)</div>
                             <div class="portfolio-value" id="portfolio-net-pl">0 PKR</div>
                         </div>
                         <div class="portfolio-item">
@@ -1270,6 +1750,60 @@
         let priceUpdateInterval = null;
         let zigzagInterval = null;
 
+        // ===== COIN RAIN SYSTEM =====
+        const coinIcons = ['fa-coins', 'fa-coin', 'fa-bitcoin', 'fa-ethereum'];
+        
+        function createCoin() {
+            const container = document.getElementById('coins-container');
+            const coin = document.createElement('i');
+            
+            const randomIcon = coinIcons[Math.floor(Math.random() * coinIcons.length)];
+            coin.className = `fas ${randomIcon} coin`;
+            
+            coin.style.left = Math.random() * 100 + '%';
+            
+            const size = Math.random() * 20 + 15;
+            coin.style.fontSize = size + 'px';
+            
+            const duration = Math.random() * 4 + 5;
+            coin.style.animationDuration = duration + 's';
+            
+            coin.style.animationDelay = Math.random() * 3 + 's';
+            
+            coin.style.opacity = Math.random() * 0.4 + 0.2;
+            
+            const colors = ['#ff6600', '#ff9100', '#ffb74d', '#ffcc80'];
+            coin.style.color = colors[Math.floor(Math.random() * colors.length)];
+            
+            container.appendChild(coin);
+            
+            setTimeout(() => {
+                if (coin.parentNode) coin.parentNode.removeChild(coin);
+            }, (duration + 3) * 1000);
+        }
+
+        function startCoinRain() {
+            for (let i = 0; i < 25; i++) {
+                setTimeout(createCoin, i * 300);
+            }
+            setInterval(createCoin, 1000);
+        }
+
+        function createParticles() {
+            const container = document.getElementById('coins-container');
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+                particle.style.setProperty('--ty', (Math.random() - 0.5) * 200 + 'px');
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
         window.playSound = (type) => {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
@@ -1325,8 +1859,9 @@
 
         function initApp() {
             checkUrlParams();
+            startCoinRain();
+            createParticles();
             
-            // Get server time offset for synchronization
             const offsetRef = ref(db, '.info/serverTimeOffset');
             onValue(offsetRef, (snap) => {
                 serverTimeOffset = snap.val() || 0;
@@ -1347,24 +1882,23 @@
             return Date.now() + serverTimeOffset;
         }
 
-        // ======== ZIGZAG CHART ANIMATION - ALWAYS RUNNING ========
+        // ===== FIXED ZIGZAG CHART ANIMATION - WORKS IN BOTH MODES =====
         function startZigzagAnimation() {
-            // Clear any existing interval
             if (zigzagInterval) clearInterval(zigzagInterval);
             
-            // Start fresh zigzag animation
             zigzagInterval = setInterval(() => {
                 if(!marketData) return;
                 
-                // Get current displayed price
+                // FIX: Get current price for BOTH auto and manual modes
                 let currentPrice;
                 if (marketMode === 'auto' && currentFluctuatedPrice !== null) {
                     currentPrice = currentFluctuatedPrice / marketData.usdtRate;
                 } else {
+                    // For manual mode, use tkPrice but add small fluctuation for zigzag effect
                     currentPrice = marketData.tkPrice;
                 }
                 
-                // Add small random fluctuation for zigzag effect
+                // Add small random fluctuation for zigzag effect (works in both modes)
                 const change = (Math.random() - 0.5) * 0.02; 
                 let newPrice = currentPrice + change;
                 if(newPrice < 0.1) newPrice = 0.1;
@@ -1393,32 +1927,26 @@
             }, 60000);
         }
 
-        // ======== TIME-BASED AUTO PRICE SYSTEM ========
+        // ===== TIME-BASED AUTO PRICE SYSTEM =====
         function calculateTimeBasedPrice() {
             const serverTime = getServerTime();
             
-            // Use basePrice from market data (set by admin)
             const basePrice = marketData.basePrice || (marketData.tkPrice * marketData.usdtRate) || 280;
             const range = marketData.autoRange || autoFluctuationRange || 50;
             const intervalSeconds = marketData.autoInterval || autoUpdateInterval || 30;
             
-            // Create a deterministic price based on server time
             const intervalMs = intervalSeconds * 1000;
             const timeSlot = Math.floor(serverTime / intervalMs);
             
-            // Use sine wave for smooth up/down movement based on time
-            const cycleDuration = 10; // Number of intervals per full cycle
+            const cycleDuration = 10;
             const positionInCycle = (timeSlot % cycleDuration) / cycleDuration;
             
-            // Generate price fluctuation using sine wave (-1 to 1 range)
             const sineValue = Math.sin(positionInCycle * Math.PI * 2);
             
-            // Map sine (-1 to 1) to price range (-range to +range)
             const fluctuation = sineValue * range;
             
             const finalPrice = basePrice + fluctuation;
             
-            // Ensure price doesn't go negative
             return Math.max(finalPrice, 1);
         }
 
@@ -1428,35 +1956,27 @@
             const newPrice = calculateTimeBasedPrice();
             currentFluctuatedPrice = newPrice;
             
-            // Update UI
             updateMarketUI();
             
-            // Save to history if significantly different (more than 1 PKR)
             if (todayPriceHistory.length > 0) {
                 const lastPrice = todayPriceHistory[todayPriceHistory.length - 1].price;
                 if (Math.abs(newPrice - lastPrice) > 1) {
                     savePriceChangeToHistory(newPrice);
                 }
             } else {
-                // First entry
                 savePriceChangeToHistory(newPrice);
             }
         }
 
         function startAutoPriceFluctuation() {
-            // Clear any existing interval
             if (priceUpdateInterval) {
                 clearInterval(priceUpdateInterval);
             }
             
-            // Immediate first calculation
             updateAutoPrice();
             
-            // Set up interval based on admin settings
             const intervalMs = (marketData.autoInterval || autoUpdateInterval || 30) * 1000;
             priceUpdateInterval = setInterval(updateAutoPrice, intervalMs);
-            
-            console.log('Auto price started, interval:', intervalMs, 'ms');
         }
 
         function stopAutoPriceFluctuation() {
@@ -1465,7 +1985,6 @@
                 priceUpdateInterval = null;
             }
             currentFluctuatedPrice = null;
-            console.log('Auto price stopped');
         }
 
         function checkAndCreateUserInDB(firebaseUser) {
@@ -1513,28 +2032,43 @@
         window.toggleAuthMode = () => {
             isSignup = !isSignup;
             const refGroup = document.getElementById('ref-group');
-            document.querySelector('.auth-box h2').innerText = isSignup ? "Create Account" : "TK Coin Login";
-            document.getElementById('auth-btn').innerText = isSignup ? "Signup" : "Login";
-            document.querySelector('.auth-toggle').innerText = isSignup ? "Already have an account? Login" : "Don't have an account? Signup";
+            const btn = document.getElementById('auth-btn');
+            const toggleText = document.getElementById('toggle-text');
+            const title = document.querySelector('.app-title');
+            const box = document.getElementById('auth-box');
             
-            if(isSignup) refGroup.classList.remove('hidden');
-            else refGroup.classList.add('hidden');
+            box.classList.add('shake');
+            setTimeout(() => box.classList.remove('shake'), 500);
+            
+            if (isSignup) {
+                title.innerText = 'Join TK Coin';
+                btn.querySelector('.btn-text').innerText = 'Create Account';
+                toggleText.innerText = 'Already have an account? Login';
+                refGroup.classList.remove('hidden');
+                refGroup.style.animation = 'slideInLeft 0.5s ease';
+            } else {
+                title.innerText = 'TK Coin';
+                btn.querySelector('.btn-text').innerText = 'Login';
+                toggleText.innerText = "Don't have an account? Signup";
+                refGroup.classList.add('hidden');
+            }
         };
 
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
             const btn = document.getElementById('auth-btn');
-            btn.innerText = "Processing...";
-            btn.disabled = true;
+            
+            btn.classList.add('loading');
+            
             try {
                 if (isSignup) await createUserWithEmailAndPassword(auth, email, pass);
                 else await signInWithEmailAndPassword(auth, email, pass);
             } catch (error) {
                 window.showToast(error.message, "error");
-                btn.innerText = isSignup ? "Signup" : "Login";
-                btn.disabled = false;
+                btn.classList.remove('loading');
             }
         });
 
@@ -1563,7 +2097,6 @@
             onValue(historyRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    // Filter only unique price changes (remove consecutive duplicates)
                     const allPoints = Object.values(data).sort((a, b) => a.timestamp - b.timestamp);
                     todayPriceHistory = [];
                     
@@ -1572,7 +2105,6 @@
                             todayPriceHistory.push(point);
                         } else {
                             const lastPoint = todayPriceHistory[todayPriceHistory.length - 1];
-                            // Only add if price actually changed (more than 0.01 difference)
                             if (Math.abs(point.price - lastPoint.price) > 0.01) {
                                 todayPriceHistory.push(point);
                             }
@@ -1624,7 +2156,6 @@
             const priceRange = high - low || 1;
             const stepX = chartWidth / (todayPriceHistory.length - 1 || 1);
             
-            // Draw grid lines
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 1;
             for (let i = 0; i <= 4; i++) {
@@ -1635,7 +2166,6 @@
                 ctx.stroke();
             }
             
-            // Draw connecting line
             ctx.beginPath();
             ctx.strokeStyle = '#ff6600';
             ctx.lineWidth = 3;
@@ -1655,7 +2185,6 @@
             
             ctx.stroke();
             
-            // Draw points with price labels
             todayPriceHistory.forEach((point, index) => {
                 const x = padding + (index * stepX);
                 const y = padding + chartHeight - ((point.price - low) / priceRange) * chartHeight;
@@ -1666,7 +2195,6 @@
                 let textY = y - 20;
                 
                 if (index === 0) {
-                    // First point - just show price
                     color = '#ff6600';
                     priceText = point.price.toFixed(0);
                     textColor = '#ff6600';
@@ -1675,24 +2203,20 @@
                     const diff = point.price - prevPrice;
                     
                     if (diff > 0) {
-                        // Price went UP - Green with +value
                         color = '#00c853';
                         priceText = '+' + diff.toFixed(0);
                         textColor = '#00c853';
-                        textY = y - 20; // Above the dot
+                        textY = y - 20;
                     } else if (diff < 0) {
-                        // Price went DOWN - Red with -value
                         color = '#ff3d00';
-                        priceText = diff.toFixed(0); // Already negative
+                        priceText = diff.toFixed(0);
                         textColor = '#ff3d00';
-                        textY = y + 30; // Below the dot
+                        textY = y + 30;
                     } else {
-                        // No change - skip drawing
                         return;
                     }
                 }
                 
-                // Draw connecting line to text
                 ctx.beginPath();
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 1;
@@ -1702,39 +2226,32 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
                 
-                // Draw point
                 ctx.beginPath();
                 ctx.fillStyle = color;
                 ctx.arc(x, y, 8, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Draw white border
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 
-                // Draw price label with background
                 ctx.font = 'bold 12px Arial';
                 const textWidth = ctx.measureText(priceText).width;
                 const paddingBox = 4;
                 
-                // Draw background for text
                 ctx.fillStyle = 'rgba(0,0,0,0.8)';
                 ctx.fillRect(x - (textWidth/2) - paddingBox, textY - 12, textWidth + (paddingBox*2), 18);
                 
-                // Draw text
                 ctx.fillStyle = textColor;
                 ctx.textAlign = 'center';
                 ctx.fillText(priceText, x, textY);
                 
-                // Draw time label below
                 ctx.fillStyle = '#aaa';
                 ctx.font = '10px Arial';
                 const time = new Date(point.timestamp).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
                 ctx.fillText(time, x, canvas.height - 10);
             });
             
-            // Draw Y-axis labels
             ctx.fillStyle = '#777';
             ctx.font = '11px Arial';
             ctx.textAlign = 'right';
@@ -1745,7 +2262,6 @@
             }
         }
 
-        // ======== FIXED PORTFOLIO CALCULATION - SHOW ONLY 1 ACTIVE INVESTMENT ========
         function calculatePortfolioPL() {
             if (!currentUserData || !marketData) return;
             
@@ -1759,12 +2275,10 @@
             let totalCurrentValue = 0;
             let activeInvestment = null;
             
-            // Sort investments by date (newest first) and get only the latest one
             const sortedInvestments = [...userInvestments].sort((a, b) => {
                 return new Date(b.date) - new Date(a.date);
             });
             
-            // Find the first (latest) investment that still has balance
             for (let inv of sortedInvestments) {
                 const originalTK = parseFloat(inv.amount) || 0;
                 const originalInvested = parseFloat(inv.rawAmount) || 0;
@@ -1775,23 +2289,18 @@
                 }
             }
             
-            // Calculate based on available balance and the active investment
             if (availableBalance > 0 && activeInvestment) {
                 const originalTK = parseFloat(activeInvestment.amount) || 0;
                 const originalInvested = parseFloat(activeInvestment.rawAmount) || 0;
                 
-                // Calculate retention ratio based on available balance vs original TK
                 const retentionRatio = originalTK > 0 ? Math.min(availableBalance / originalTK, 1) : 0;
                 
                 const activeTK = originalTK * retentionRatio;
                 const activeInvested = originalInvested * retentionRatio;
                 
-                // FIX: Current Value = Investment worth based on original deposit amount (NOT available balance)
-                // Total Balance = Available TK coins (shown separately now)
-                totalCurrentValue = activeTK * currentPricePKR;  // Investment ki current market value
-                totalInvested = activeInvested;  // Original kitna invest kiya tha
+                totalCurrentValue = activeTK * currentPricePKR;
+                totalInvested = activeInvested;
             } else if (availableBalance > 0) {
-                // If no active investment but has balance, show current value only
                 totalCurrentValue = availableBalance * currentPricePKR;
                 totalInvested = 0;
             }
@@ -1802,7 +2311,6 @@
             document.getElementById('portfolio-total-invested').innerText = totalInvested.toFixed(2) + ' PKR';
             document.getElementById('portfolio-total-value').innerText = totalCurrentValue.toFixed(2);
             
-            // FIX: Show Total Balance (TK) separately - Yeh user ke paas kitne coins hain
             const totalBalanceTK = parseFloat(currentUserData.balanceTK) || 0;
             document.getElementById('portfolio-total-balance').innerText = totalBalanceTK.toFixed(2) + ' TK';
             document.getElementById('portfolio-current-price-display').innerText = currentPricePKR.toFixed(2) + ' PKR';
@@ -1828,7 +2336,6 @@
             document.getElementById('quick-pl-percent').innerText = (plPercentage >= 0 ? '+' : '') + plPercentage.toFixed(2) + '%';
             document.getElementById('quick-pl-percent').style.color = netPL >= 0 ? '#00c853' : '#ff3d00';
             
-            // Render only the active/latest investment
             renderInvestmentsList(currentPricePKR, availableBalance, activeInvestment);
         }
 
@@ -1839,14 +2346,13 @@
                 listContainer.innerHTML = `
                     <div style="text-align:center; color:#777; padding: 20px;">
                         <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                        No active investments. Your balance is 0 TK.<br>
+                        system is updated. New deposit to show p/L.<br>
                         <small style="color: #555;">Make a deposit to start investing!</small>
                     </div>
                 `;
                 return;
             }
             
-            // Show only the active (latest) investment
             const originalTK = parseFloat(activeInvestment.amount) || 0;
             const originalInvested = parseFloat(activeInvestment.rawAmount) || 0;
             
@@ -1854,8 +2360,6 @@
             const buyRate = parseFloat(activeInvestment.usdtRateAtDeposit) || marketData.usdtRate;
             const buyPricePKR = buyPriceTK * buyRate;
             
-            // FIX: Current Value = Original TK × Current Price (NOT available balance)
-            // This shows what the investment is worth now
             const currentValue = originalTK * currentPricePKR;
             const pl = currentValue - originalInvested;
             const plPercent = originalInvested > 0 ? ((pl / originalInvested) * 100) : 0;
@@ -1914,8 +2418,8 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
             
-            document.getElementById('auth-btn').innerText = isSignup ? "Signup" : "Login";
-            document.getElementById('auth-btn').disabled = false;
+            const btn = document.getElementById('auth-btn');
+            btn.classList.remove('loading');
 
             lastKnownBalance = user.balanceTK || 0;
             lastReadTimestamp = user.lastReadTimestamp || 0;
@@ -1951,14 +2455,12 @@
                     autoFluctuationRange = data.autoRange || 50;
                     autoUpdateInterval = data.autoInterval || 30;
                     
-                    // Update mode badge - HIDDEN as requested
                     const modeBadge = document.getElementById('price-mode-badge');
                     if (modeBadge) {
-                        modeBadge.innerText = ''; // Empty text
-                        modeBadge.className = 'mode-indicator'; // Remove color classes
+                        modeBadge.innerText = '';
+                        modeBadge.className = 'mode-indicator';
                     }
                     
-                    // Handle mode switch
                     if (marketMode === 'auto') {
                         if (oldMode !== 'auto' || !priceUpdateInterval) {
                             startAutoPriceFluctuation();
@@ -1971,7 +2473,6 @@
                     updateMarketUI();
                     updatePortfolioPriceDisplay();
                     
-                    // Initialize chart points if empty
                     if (chartPoints.length === 0) {
                         const initialPrice = marketMode === 'auto' ? 
                             (currentFluctuatedPrice || data.basePrice || data.tkPrice * data.usdtRate) : 
@@ -2035,7 +2536,7 @@
             window.loadUserSavings(user.uid);
             monitorIncomingTransfers(user.uid); 
             
-            // Start zigzag animation immediately and keep it running
+            // FIX: Start zigzag animation immediately for BOTH modes
             startZigzagAnimation();
             
             loadTodayPriceHistory();
@@ -2330,20 +2831,17 @@
             window.calculateDeposit();
         };
 
-        // ======== FIXED DEPOSIT CALCULATION - USES CURRENT PRICE ========
         window.calculateDeposit = () => {
             const amount = parseFloat(document.getElementById('deposit-amount').value) || 0;
             
-            // FIX: Use getCurrentPrice() to get the correct price based on mode (auto/manual)
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
             
-            // Calculate: PKR → USDT → TK
             const usdtValue = amount / marketData.usdtRate;
-            const receive = usdtValue / currentPrice;  // Use currentPrice instead of marketData.tkPrice
+            const receive = usdtValue / currentPrice;
             
             document.getElementById('deposit-rate').innerText = '1';
-            document.getElementById('deposit-price').innerText = currentPricePKR.toFixed(2);  // Show current rate
+            document.getElementById('deposit-price').innerText = currentPricePKR.toFixed(2);
             document.getElementById('deposit-calc-receive').innerText = receive.toFixed(2);
             document.getElementById('deposit-invest-value').innerText = amount.toFixed(2);
             
@@ -2364,7 +2862,6 @@
             window.showToast("Copied!");
         };
 
-        // ======== FIXED SUBMIT DEPOSIT - USES CURRENT PRICE ========
         window.submitDeposit = () => {
             const amountInput = parseFloat(document.getElementById('deposit-amount').value);
             const refId = document.getElementById('deposit-ref').value;
@@ -2378,13 +2875,12 @@
             if (!amountInput || amountInput <= 0) return window.showToast("Enter valid amount", "error");
             if (!refId) return window.showToast("Enter Transaction ID", "error");
             
-            // FIX: Use getCurrentPrice() to get the correct current rate
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
             
             const pkrAmount = amountInput;
             const usdtValue = pkrAmount / marketData.usdtRate;
-            const receiveTk = usdtValue / currentPrice;  // Use currentPrice
+            const receiveTk = usdtValue / currentPrice;
             
             const depositData = {
                 userId: currentUserData.uid,
@@ -2392,7 +2888,7 @@
                 method: method,
                 amount: receiveTk,
                 rawAmount: pkrAmount,
-                tkPriceAtDeposit: currentPrice,  // FIX: Save current price, not marketData.tkPrice
+                tkPriceAtDeposit: currentPrice,
                 usdtRateAtDeposit: marketData.usdtRate,
                 ref: refId,
                 date: new Date().toLocaleString(),
@@ -2424,15 +2920,12 @@
             });
         };
 
-        // ======== FIXED WITHDRAW CALCULATION - USES CURRENT PRICE ========
         window.calculateWithdraw = () => {
             const tk = parseFloat(document.getElementById('withdraw-amount').value) || 0;
             
-            // FIX: Use getCurrentPrice() to get the correct price based on mode (auto/manual)
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
             
-            // Calculate: TK → PKR directly using current rate
             const pkrVal = tk * currentPricePKR;
             
             document.getElementById('withdraw-calc-usdt').innerText = pkrVal.toFixed(2);
@@ -2452,10 +2945,9 @@
 
             if (total > currentUserData.balanceTK) return window.showToast("Insufficient balance", "error");
 
-            // FIX: Use getCurrentPrice() to get the correct current rate
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
-            const pkrVal = amount * currentPricePKR;  // Use current rate
+            const pkrVal = amount * currentPricePKR;
 
             const newWithdrawKey = push(ref(db, 'withdrawals')).key;
 
@@ -2465,7 +2957,7 @@
                 method: method,
                 account: account,
                 amount: amount, 
-                pkrAmount: pkrVal,  // FIX: Use calculated PKR value with current rate
+                pkrAmount: pkrVal,
                 fee: fee,
                 total: total, 
                 date: new Date().toLocaleString(),
@@ -2780,7 +3272,6 @@
             });
         }
         
-        // ======== SAVINGS SYSTEM ========
         window.updateSavingsSettings = () => {
             document.getElementById('profit-30').innerText = appSettings.savings30;
             document.getElementById('profit-60').innerText = appSettings.savings60;
@@ -2838,7 +3329,6 @@
             
             const currentBal = parseFloat(currentUserData.balanceTK || 0);
             
-            // FIX: Use getCurrentPrice() for savings calculation too
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
             const requiredTK = amount / currentPricePKR;
@@ -3014,7 +3504,6 @@
             
             const totalAmount = parseFloat(saving.amountPKR) + parseFloat(saving.totalProfitEarned || 0);
             
-            // FIX: Use getCurrentPrice() for transfer calculation
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
             const tkAmount = totalAmount / currentPricePKR;
