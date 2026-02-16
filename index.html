@@ -1774,8 +1774,6 @@
         let zigzagInterval = null;
         let coinRainInterval = null;
         
-        
-
         // ===== SOUND EFFECTS =====
         window.playSound = (type) => {
             try {
@@ -1908,7 +1906,6 @@
 
         function initApp() {
             checkUrlParams();
-            // Start coin rain for login screen
             
             const offsetRef = ref(db, '.info/serverTimeOffset');
             onValue(offsetRef, (snap) => {
@@ -1919,7 +1916,6 @@
                 if (user) {
                     checkAndCreateUserInDB(user);
                 } else {
-                    // Show login screen directly
                     document.getElementById('auth-screen').classList.add('show');
                     startCoinRain();
                     createParticles();
@@ -1933,12 +1929,13 @@
             return Date.now() + serverTimeOffset;
         }
 
-        // ===== FIXED ZIGZAG CHART =====
+        // ===== FIXED ZIGZAG CHART - WORKS WITH BOTH AUTO AND MANUAL =====
         let lastZigzagPrice = null;
         
         function startZigzagAnimation() {
             if (zigzagInterval) clearInterval(zigzagInterval);
             
+            // Initialize with current price (works for both auto and manual)
             const currentPrice = getCurrentPrice();
             if (lastZigzagPrice === null) {
                 lastZigzagPrice = currentPrice;
@@ -1947,6 +1944,7 @@
             zigzagInterval = setInterval(() => {
                 if(!marketData) return;
                 
+                // Get current price based on mode
                 let basePrice = getCurrentPrice();
                 
                 const fluctuation = (Math.random() - 0.5) * 0.04;
@@ -2040,15 +2038,13 @@
             currentFluctuatedPrice = null;
         }
 
-        
-
         function checkAndCreateUserInDB(firebaseUser) {
             const userRef = ref(db, 'users/' + firebaseUser.uid);
             get(userRef).then((snapshot) => {
                 if (snapshot.exists()) {
                     currentUserData = snapshot.val();
                     currentUserData.uid = firebaseUser.uid;
-                                        loginSuccess(currentUserData);
+                    loginSuccess(currentUserData);
                 } else {
                     const passwordInput = document.getElementById('auth-pass').value;
                     const refCode = document.getElementById('auth-ref').value.trim();
@@ -2077,7 +2073,7 @@
                     set(userRef, newUser).then(() => {
                         currentUserData = newUser;
                         currentUserData.uid = firebaseUser.uid;
-                                                loginSuccess(currentUserData);
+                        loginSuccess(currentUserData);
                     });
                 }
             }).catch(err => {
@@ -2650,6 +2646,7 @@
             if (marketMode === 'auto' && currentFluctuatedPrice !== null) {
                 return currentFluctuatedPrice / marketData.usdtRate;
             }
+            // Manual mode mein direct tkPrice return kare
             return marketData.tkPrice;
         }
 
@@ -2815,6 +2812,22 @@
             }
             
             document.getElementById('market-price').innerText = priceInPKR.toFixed(2);
+            
+            // ===== FIX: Manual mode mein bhi zigzag chart update kare =====
+            if (marketMode === 'manual') {
+                const manualPrice = marketData.tkPrice;
+                if (chartPoints.length === 0) {
+                    for(let i=0; i<20; i++) chartPoints.push(manualPrice);
+                } else {
+                    // Last point ko update karein agar price change hua ho
+                    const lastPoint = chartPoints[chartPoints.length - 1];
+                    if (Math.abs(manualPrice - lastPoint) > 0.01) {
+                        chartPoints.push(manualPrice);
+                        if (chartPoints.length > 20) chartPoints.shift();
+                        drawChart();
+                    }
+                }
+            }
             
             if (!document.getElementById('view-deposit').classList.contains('hidden')) {
                 window.calculateDeposit();
@@ -3011,7 +3024,6 @@
             const currentPricePKR = currentPrice * marketData.usdtRate;
             const pkrVal = amount * currentPricePKR;
             
-            // Get current rate for saving
             const currentRate = marketData.usdtRate || 280;
 
             const newWithdrawKey = push(ref(db, 'withdrawals')).key;
@@ -3023,7 +3035,7 @@
                 account: account,
                 amount: amount, 
                 pkrAmount: pkrVal,
-                rate: currentRate, // SAVE THE RATE
+                rate: currentRate,
                 fee: fee,
                 total: total, 
                 date: new Date().toLocaleString(),
