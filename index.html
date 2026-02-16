@@ -110,6 +110,92 @@
             50% { transform: translateY(-10px); }
         }
 
+        /* ===== LOCATION PERMISSION SCREEN ===== */
+        #location-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #121212 0%, #1a0f00 50%, #121212 100%);
+            z-index: 999999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .location-box {
+            background: rgba(30, 30, 30, 0.95);
+            padding: 40px 35px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 102, 0, 0.3);
+            box-shadow: 
+                0 20px 60px rgba(255, 102, 0, 0.2),
+                0 0 100px rgba(255, 102, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            text-align: center;
+            animation: boxFloat 4s ease-in-out infinite;
+        }
+
+        .location-icon {
+            font-size: 5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            animation: pulseLocation 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseLocation {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .location-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .location-text {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .location-warning {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .location-warning.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        .btn-location {
+            background: linear-gradient(135deg, var(--primary), #ff9100);
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-exit {
+            background: transparent;
+            border: 1px solid #555;
+            color: #777;
+            padding: 12px 30px;
+            font-size: 0.9rem;
+        }
+
         /* ===== LOGIN SCREEN ONLY STYLES ===== */
         .coins-container {
             position: fixed;
@@ -120,11 +206,11 @@
             pointer-events: none;
             overflow: hidden;
             z-index: 0;
-            display: none; /* Hidden by default, shown only on auth screen */
+            display: none;
         }
 
         #auth-screen .coins-container {
-            display: block; /* Only show on login screen */
+            display: block;
         }
 
         .coin {
@@ -168,7 +254,7 @@
         }
 
         #auth-screen {
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -178,6 +264,10 @@
             left: 0;
             width: 100%;
             z-index: 1000;
+        }
+
+        #auth-screen.show {
+            display: flex;
         }
 
         .auth-box {
@@ -514,7 +604,7 @@
         }
 
         @media (max-width: 480px) {
-            .auth-box {
+            .auth-box, .location-box {
                 padding: 30px 20px;
                 margin: 15px;
                 border-radius: 20px;
@@ -530,6 +620,14 @@
             
             #auth-screen .input-group input {
                 padding: 12px 12px 12px 40px;
+            }
+
+            .location-icon {
+                font-size: 4rem;
+            }
+
+            .location-title {
+                font-size: 1.5rem;
             }
         }
 
@@ -1128,7 +1226,7 @@
         }
 
         .mode-indicator {
-            display: none; /* HIDDEN as requested */
+            display: none;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -1154,7 +1252,33 @@
         </div>
     </div>
 
-    <!-- NEW LOGIN SCREEN -->
+    <!-- LOCATION PERMISSION SCREEN - SHOWS FIRST -->
+    <div id="location-screen">
+        <div class="location-box">
+            <i class="fas fa-map-marker-alt location-icon"></i>
+            <h2 class="location-title">Location Required</h2>
+            <p class="location-text">
+                TK Coin requires location access to provide secure services and verify your region. 
+                Please allow location access to continue.
+            </p>
+            
+            <div id="location-warning" class="location-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Location access denied!</strong><br>
+                You must allow location access to use TK Coin. Please enable location permissions in your browser settings.
+            </div>
+
+            <button class="btn btn-location" onclick="window.requestLocation()">
+                <i class="fas fa-location-arrow"></i> Allow Location Access
+            </button>
+            
+            <button class="btn btn-exit" onclick="window.exitApp()">
+                <i class="fas fa-times"></i> Exit
+            </button>
+        </div>
+    </div>
+
+    <!-- NEW LOGIN SCREEN - HIDDEN INITIALLY -->
     <div id="auth-screen">
         <div class="auth-box" id="auth-box">
             <!-- Logo Animation -->
@@ -1759,6 +1883,55 @@
         let priceUpdateInterval = null;
         let zigzagInterval = null;
         let coinRainInterval = null;
+        let userLocationData = null; // Store location data
+
+        // ===== LOCATION PERMISSION FUNCTIONS =====
+        window.requestLocation = () => {
+            if (!navigator.geolocation) {
+                window.showToast("Geolocation is not supported by your browser", "error");
+                document.getElementById('location-warning').classList.add('show');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // Location granted
+                    userLocationData = {
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude,
+                        timestamp: Date.now()
+                    };
+                    
+                    // Hide location screen, show login
+                    document.getElementById('location-screen').style.display = 'none';
+                    document.getElementById('auth-screen').classList.add('show');
+                    
+                    // Start coin rain for login screen
+                    startCoinRain();
+                    createParticles();
+                    
+                    window.showToast("Location access granted!", "success");
+                },
+                (error) => {
+                    // Location denied
+                    console.error("Location error:", error);
+                    document.getElementById('location-warning').classList.add('show');
+                    window.showToast("Location access is required to use this app", "error");
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        };
+
+        window.exitApp = () => {
+            // Close the window/tab or redirect to blank
+            window.location.href = "about:blank";
+            // Or try to close window
+            window.close();
+        };
 
         // ===== SOUND EFFECTS =====
         window.playSound = (type) => {
@@ -1787,7 +1960,6 @@
                     osc.start();
                     osc.stop(ctx.currentTime + 0.3);
                 }
-                // Price sounds removed as requested
             } catch(e) {
                 console.log('Sound error:', e);
             }
@@ -1824,17 +1996,14 @@
         }
 
         function startCoinRain() {
-            // Clear any existing interval
             if (coinRainInterval) clearInterval(coinRainInterval);
             
             const container = document.getElementById('coins-container');
             if (container) container.style.display = 'block';
             
-            // Create initial coins
             for (let i = 0; i < 15; i++) {
                 setTimeout(createCoin, i * 300);
             }
-            // Continue creating coins
             coinRainInterval = setInterval(createCoin, 1200);
         }
 
@@ -1846,7 +2015,7 @@
             const container = document.getElementById('coins-container');
             if (container) {
                 container.style.display = 'none';
-                container.innerHTML = ''; // Clear all coins
+                container.innerHTML = '';
             }
         }
 
@@ -1896,8 +2065,7 @@
 
         function initApp() {
             checkUrlParams();
-            startCoinRain();
-            createParticles();
+            // Don't start coin rain here - wait for location permission
             
             const offsetRef = ref(db, '.info/serverTimeOffset');
             onValue(offsetRef, (snap) => {
@@ -1908,11 +2076,11 @@
                 if (user) {
                     checkAndCreateUserInDB(user);
                 } else {
-                    document.getElementById('auth-screen').classList.remove('hidden');
+                    // Show location screen first
+                    document.getElementById('location-screen').style.display = 'flex';
+                    document.getElementById('auth-screen').classList.remove('show');
                     document.getElementById('app-container').classList.add('hidden');
                     currentUserData = null;
-                    // Ensure coin rain is running on login screen
-                    startCoinRain();
                 }
             });
         }
@@ -1921,13 +2089,12 @@
             return Date.now() + serverTimeOffset;
         }
 
-        // ===== FIXED ZIGZAG CHART - SOUNDS REMOVED =====
+        // ===== FIXED ZIGZAG CHART =====
         let lastZigzagPrice = null;
         
         function startZigzagAnimation() {
             if (zigzagInterval) clearInterval(zigzagInterval);
             
-            // Initialize with current price - WORKS FOR BOTH MODES NOW
             const currentPrice = getCurrentPrice();
             if (lastZigzagPrice === null) {
                 lastZigzagPrice = currentPrice;
@@ -1936,17 +2103,12 @@
             zigzagInterval = setInterval(() => {
                 if(!marketData) return;
                 
-                // Get current base price - WORKS FOR BOTH MODES
                 let basePrice = getCurrentPrice();
                 
-                // Create fluctuation around current price (±2%)
-                const fluctuation = (Math.random() - 0.5) * 0.04; // ±2%
+                const fluctuation = (Math.random() - 0.5) * 0.04;
                 let newPrice = basePrice * (1 + fluctuation);
                 
-                // Ensure price stays positive
                 if(newPrice < 0.1) newPrice = 0.1;
-                
-                // Sounds removed as requested
                 
                 lastZigzagPrice = newPrice;
                 
@@ -2036,39 +2198,44 @@
 
         // ===== IP/LOCATION TRACKING FUNCTION =====
         function updateUserLocation(uid) {
-            // Get IP and location info using ip-api.com (free, no API key, 45 req/min)
+            // First try to get more detailed location if available
+            const locationData = {
+                ...userLocationData,
+                lastLogin: new Date().toISOString(),
+                timestamp: Date.now()
+            };
+
+            // Try to get IP info
             fetch('http://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query')
                 .then(response => response.json())
                 .then(data => {
-                    if(data.status !== 'success') {
-                        console.log('IP API error:', data.message);
-                        throw new Error(data.message || 'IP lookup failed');
+                    if(data.status === 'success') {
+                        locationData.ip = data.query;
+                        locationData.city = data.city;
+                        locationData.region = data.regionName;
+                        locationData.country = data.country;
+                        locationData.countryCode = data.countryCode;
+                        locationData.zip = data.zip;
+                        locationData.timezone = data.timezone;
+                        locationData.isp = data.isp;
+                        locationData.org = data.org;
+                        
+                        // If we have GPS coordinates, use those, otherwise use IP coordinates
+                        if (!locationData.lat) locationData.lat = data.lat;
+                        if (!locationData.lon) locationData.lon = data.lon;
                     }
-                    
-                    const locationData = {
-                        ip: data.query,
-                        city: data.city,
-                        region: data.regionName,
-                        country: data.country,
-                        countryCode: data.countryCode,
-                        lastLogin: new Date().toISOString(),
-                        timezone: data.timezone,
-                        isp: data.isp,
-                        org: data.org,
-                        lat: data.lat,
-                        lon: data.lon
-                    };
                     
                     update(ref(db, 'users/' + uid), {
                         lastLocation: locationData,
-                        lastIP: data.query,
+                        lastIP: data.query || 'Unknown',
                         lastLoginAt: Date.now()
                     });
                 })
                 .catch(err => {
                     console.log('Location tracking error:', err);
-                    // Still update basic info even if location fails
+                    // Still update with what we have
                     update(ref(db, 'users/' + uid), {
+                        lastLocation: locationData,
                         lastLoginAt: Date.now()
                     });
                 });
@@ -2080,7 +2247,6 @@
                 if (snapshot.exists()) {
                     currentUserData = snapshot.val();
                     currentUserData.uid = firebaseUser.uid;
-                    // Update IP/location on every login
                     updateUserLocation(firebaseUser.uid);
                     loginSuccess(currentUserData);
                 } else {
@@ -2096,7 +2262,8 @@
                         isPremium: isAdmin ? true : false,
                         balanceTK: isAdmin ? 10000 : 0,
                         createdAt: new Date().toISOString(),
-                        lastReadTimestamp: 0
+                        lastReadTimestamp: 0,
+                        signupLocation: userLocationData // Save signup location
                     };
 
                     if (refCode) {
@@ -2111,7 +2278,6 @@
                     set(userRef, newUser).then(() => {
                         currentUserData = newUser;
                         currentUserData.uid = firebaseUser.uid;
-                        // Get IP/location for new user
                         updateUserLocation(firebaseUser.uid);
                         loginSuccess(currentUserData);
                     });
@@ -2163,7 +2329,6 @@
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
                 }
-                // Success - handled by onAuthStateChanged
             } catch (error) {
                 window.showToast(error.message, "error");
                 btn.classList.remove('loading');
@@ -2513,12 +2678,11 @@
         }
 
         function loginSuccess(user) {
-            // STOP coin rain when logged in
             stopCoinRain();
             
-            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('show');
             document.getElementById('app-container').classList.remove('hidden');
-            
+
             const btn = document.getElementById('auth-btn');
             btn.classList.remove('loading');
 
@@ -2637,7 +2801,6 @@
             window.loadUserSavings(user.uid);
             monitorIncomingTransfers(user.uid); 
             
-            // Start zigzag animation for BOTH modes - FIXED
             startZigzagAnimation();
             
             loadTodayPriceHistory();
@@ -3049,6 +3212,9 @@
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
             const pkrVal = amount * currentPricePKR;
+            
+            // Get current rate for saving
+            const currentRate = marketData.usdtRate || 280;
 
             const newWithdrawKey = push(ref(db, 'withdrawals')).key;
 
@@ -3059,6 +3225,7 @@
                 account: account,
                 amount: amount, 
                 pkrAmount: pkrVal,
+                rate: currentRate, // SAVE THE RATE
                 fee: fee,
                 total: total, 
                 date: new Date().toLocaleString(),
@@ -3180,7 +3347,7 @@
         window.upgradePremium = () => {
             if (currentUserData.balanceTK >= 100) {
                 update(ref(db, 'users/' + currentUserData.uid), {
-                    balanceTK: currentUserData.balanceTK - 100,
+                    balanceBalanceTK: currentUserData.balanceTK - 100,
                     isPremium: true
                 }).then(() => window.showToast("Upgraded!"));
             } else {
