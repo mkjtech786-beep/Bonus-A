@@ -168,7 +168,7 @@
         }
 
         #auth-screen {
-            display: none;
+            display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -178,10 +178,6 @@
             left: 0;
             width: 100%;
             z-index: 1000;
-        }
-
-        #auth-screen.show {
-            display: flex;
         }
 
         .auth-box {
@@ -518,7 +514,7 @@
         }
 
         @media (max-width: 480px) {
-            .auth-box, .location-box {
+            .auth-box {
                 padding: 30px 20px;
                 margin: 15px;
                 border-radius: 20px;
@@ -534,14 +530,6 @@
             
             #auth-screen .input-group input {
                 padding: 12px 12px 12px 40px;
-            }
-
-            .location-icon {
-                font-size: 4rem;
-            }
-
-            .location-title {
-                font-size: 1.5rem;
             }
         }
 
@@ -1166,9 +1154,7 @@
         </div>
     </div>
 
-    
-
-    <!-- NEW LOGIN SCREEN - HIDDEN INITIALLY -->
+    <!-- NEW LOGIN SCREEN -->
     <div id="auth-screen">
         <div class="auth-box" id="auth-box">
             <!-- Logo Animation -->
@@ -1773,7 +1759,7 @@
         let priceUpdateInterval = null;
         let zigzagInterval = null;
         let coinRainInterval = null;
-        
+
         // ===== SOUND EFFECTS =====
         window.playSound = (type) => {
             try {
@@ -1906,6 +1892,8 @@
 
         function initApp() {
             checkUrlParams();
+            startCoinRain();
+            createParticles();
             
             const offsetRef = ref(db, '.info/serverTimeOffset');
             onValue(offsetRef, (snap) => {
@@ -1916,11 +1904,10 @@
                 if (user) {
                     checkAndCreateUserInDB(user);
                 } else {
-                    document.getElementById('auth-screen').classList.add('show');
-                    startCoinRain();
-                    createParticles();
+                    document.getElementById('auth-screen').classList.remove('hidden');
                     document.getElementById('app-container').classList.add('hidden');
                     currentUserData = null;
+                    startCoinRain();
                 }
             });
         }
@@ -1929,36 +1916,77 @@
             return Date.now() + serverTimeOffset;
         }
 
-        // ===== FIXED ZIGZAG CHART - WORKS WITH BOTH AUTO AND MANUAL =====
+        // ===== FIXED ZIGZAG CHART - WORKS FOR BOTH MANUAL & AUTO MODES =====
         let lastZigzagPrice = null;
+        let lastChartUpdateTime = 0;
         
         function startZigzagAnimation() {
             if (zigzagInterval) clearInterval(zigzagInterval);
             
-            // Initialize with current price (works for both auto and manual)
+            // Initialize with current price - WORKS FOR BOTH MODES
             const currentPrice = getCurrentPrice();
             if (lastZigzagPrice === null) {
                 lastZigzagPrice = currentPrice;
             }
             
+            // Har 1 second mein chart update karein - dono modes mein
             zigzagInterval = setInterval(() => {
                 if(!marketData) return;
                 
-                // Get current price based on mode
+                // Get current base price - WORKS FOR BOTH MODES
                 let basePrice = getCurrentPrice();
                 
-                const fluctuation = (Math.random() - 0.5) * 0.04;
-                let newPrice = basePrice * (1 + fluctuation);
-                
-                if(newPrice < 0.1) newPrice = 0.1;
-                
-                lastZigzagPrice = newPrice;
-                
-                chartPoints.push(newPrice);
-                if (chartPoints.length > 20) chartPoints.shift();
-                
-                drawChart();
+                // Manual mode mein bhi visual movement ke liye slight fluctuation
+                // Taake chart freeze na ho
+                if (marketMode === 'manual') {
+                    // Manual mode mein bhi ±0.5% fluctuation for visual effect
+                    const fluctuation = (Math.random() - 0.5) * 0.01; // ±0.5%
+                    let newPrice = basePrice * (1 + fluctuation);
+                    
+                    if(newPrice < 0.1) newPrice = 0.1;
+                    
+                    lastZigzagPrice = newPrice;
+                    
+                    chartPoints.push(newPrice);
+                    if (chartPoints.length > 20) chartPoints.shift();
+                    
+                    drawChart();
+                } else {
+                    // Auto mode mein normal fluctuation
+                    const fluctuation = (Math.random() - 0.5) * 0.04; // ±2%
+                    let newPrice = basePrice * (1 + fluctuation);
+                    
+                    if(newPrice < 0.1) newPrice = 0.1;
+                    
+                    lastZigzagPrice = newPrice;
+                    
+                    chartPoints.push(newPrice);
+                    if (chartPoints.length > 20) chartPoints.shift();
+                    
+                    drawChart();
+                }
             }, 1000); 
+        }
+
+        // ===== MANUAL PRICE CHANGE DETECTION =====
+        function handleManualPriceChange(newPrice) {
+            // Agar manual mode mein price change hua hai
+            if (marketMode === 'manual' && lastZigzagPrice !== null) {
+                const priceDiff = Math.abs(newPrice - lastZigzagPrice);
+                
+                // Agar price significantly change hua hai (0.5% se zyada)
+                if (priceDiff > (lastZigzagPrice * 0.005)) {
+                    // Naya point add karein bina wait kiye
+                    lastZigzagPrice = newPrice;
+                    
+                    chartPoints.push(newPrice);
+                    if (chartPoints.length > 20) chartPoints.shift();
+                    
+                    drawChart();
+                    
+                    console.log('Manual price updated in zigzag:', newPrice);
+                }
+            }
         }
 
         function updateMarketPressure() {
@@ -2038,12 +2066,51 @@
             currentFluctuatedPrice = null;
         }
 
+        // ===== IP/LOCATION TRACKING FUNCTION =====
+        function updateUserLocation(uid) {
+            fetch('http://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query')
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status !== 'success') {
+                        console.log('IP API error:', data.message);
+                        throw new Error(data.message || 'IP lookup failed');
+                    }
+                    
+                    const locationData = {
+                        ip: data.query,
+                        city: data.city,
+                        region: data.regionName,
+                        country: data.country,
+                        countryCode: data.countryCode,
+                        lastLogin: new Date().toISOString(),
+                        timezone: data.timezone,
+                        isp: data.isp,
+                        org: data.org,
+                        lat: data.lat,
+                        lon: data.lon
+                    };
+                    
+                    update(ref(db, 'users/' + uid), {
+                        lastLocation: locationData,
+                        lastIP: data.query,
+                        lastLoginAt: Date.now()
+                    });
+                })
+                .catch(err => {
+                    console.log('Location tracking error:', err);
+                    update(ref(db, 'users/' + uid), {
+                        lastLoginAt: Date.now()
+                    });
+                });
+        }
+
         function checkAndCreateUserInDB(firebaseUser) {
             const userRef = ref(db, 'users/' + firebaseUser.uid);
             get(userRef).then((snapshot) => {
                 if (snapshot.exists()) {
                     currentUserData = snapshot.val();
                     currentUserData.uid = firebaseUser.uid;
+                    updateUserLocation(firebaseUser.uid);
                     loginSuccess(currentUserData);
                 } else {
                     const passwordInput = document.getElementById('auth-pass').value;
@@ -2073,6 +2140,7 @@
                     set(userRef, newUser).then(() => {
                         currentUserData = newUser;
                         currentUserData.uid = firebaseUser.uid;
+                        updateUserLocation(firebaseUser.uid);
                         loginSuccess(currentUserData);
                     });
                 }
@@ -2474,9 +2542,9 @@
         function loginSuccess(user) {
             stopCoinRain();
             
-            document.getElementById('auth-screen').classList.remove('show');
+            document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
-
+            
             const btn = document.getElementById('auth-btn');
             btn.classList.remove('loading');
 
@@ -2508,11 +2576,31 @@
                 const data = snapshot.val();
                 if (data) {
                     const oldMode = marketMode;
+                    const oldTkPrice = marketData ? marketData.tkPrice : null;
+                    const oldUsdtRate = marketData ? marketData.usdtRate : null;
                     
                     marketData = data;
                     marketMode = data.mode || 'manual';
                     autoFluctuationRange = data.autoRange || 50;
                     autoUpdateInterval = data.autoInterval || 30;
+                    
+                    // ===== MANUAL PRICE CHANGE DETECTION =====
+                    if (marketMode === 'manual' && oldTkPrice !== null) {
+                        const newTkPrice = data.tkPrice;
+                        const newUsdtRate = data.usdtRate;
+                        
+                        // Check agar price ya rate change hua hai
+                        if (oldTkPrice !== newTkPrice || oldUsdtRate !== newUsdtRate) {
+                            const newPricePKR = newTkPrice * newUsdtRate;
+                            
+                            // Zigzag chart ko immediately update karein
+                            handleManualPriceChange(newTkPrice);
+                            
+                            // Today's chart bhi update karein
+                            savePriceChangeToHistory(newPricePKR);
+                        }
+                    }
+                    // ======================================
                     
                     const modeBadge = document.getElementById('price-mode-badge');
                     if (modeBadge) {
@@ -2595,6 +2683,7 @@
             window.loadUserSavings(user.uid);
             monitorIncomingTransfers(user.uid); 
             
+            // Start zigzag animation for BOTH modes - FIXED
             startZigzagAnimation();
             
             loadTodayPriceHistory();
@@ -2646,7 +2735,6 @@
             if (marketMode === 'auto' && currentFluctuatedPrice !== null) {
                 return currentFluctuatedPrice / marketData.usdtRate;
             }
-            // Manual mode mein direct tkPrice return kare
             return marketData.tkPrice;
         }
 
@@ -2804,30 +2892,33 @@
 
         function updateMarketUI() {
             let priceInPKR;
+            let currentTkPrice;
             
             if (marketMode === 'auto' && currentFluctuatedPrice !== null) {
                 priceInPKR = currentFluctuatedPrice;
+                currentTkPrice = currentFluctuatedPrice / marketData.usdtRate;
             } else {
                 priceInPKR = marketData.tkPrice * marketData.usdtRate;
+                currentTkPrice = marketData.tkPrice;
             }
             
-            document.getElementById('market-price').innerText = priceInPKR.toFixed(2);
-            
-            // ===== FIX: Manual mode mein bhi zigzag chart update kare =====
-            if (marketMode === 'manual') {
-                const manualPrice = marketData.tkPrice;
-                if (chartPoints.length === 0) {
-                    for(let i=0; i<20; i++) chartPoints.push(manualPrice);
-                } else {
-                    // Last point ko update karein agar price change hua ho
-                    const lastPoint = chartPoints[chartPoints.length - 1];
-                    if (Math.abs(manualPrice - lastPoint) > 0.01) {
-                        chartPoints.push(manualPrice);
-                        if (chartPoints.length > 20) chartPoints.shift();
-                        drawChart();
-                    }
+            // ===== REAL-TIME ZIGZAG SYNC =====
+            // Agar lastZigzagPrice se zyada difference hai toh sync karein
+            if (lastZigzagPrice !== null) {
+                const diff = Math.abs(currentTkPrice - lastZigzagPrice);
+                const diffPercent = (diff / lastZigzagPrice) * 100;
+                
+                // Agar 2% se zyada difference hai toh immediately update karein
+                if (diffPercent > 2) {
+                    lastZigzagPrice = currentTkPrice;
+                    chartPoints.push(currentTkPrice);
+                    if (chartPoints.length > 20) chartPoints.shift();
+                    drawChart();
                 }
             }
+            // ================================
+            
+            document.getElementById('market-price').innerText = priceInPKR.toFixed(2);
             
             if (!document.getElementById('view-deposit').classList.contains('hidden')) {
                 window.calculateDeposit();
@@ -2839,22 +2930,67 @@
             const ctx = canvas.getContext('2d');
             canvas.width = canvas.parentElement.offsetWidth;
             canvas.height = canvas.parentElement.offsetHeight;
-            const points = chartPoints.length > 0 ? chartPoints : [marketData.tkPrice];
+            
+            const points = chartPoints.length > 0 ? chartPoints : [marketData?.tkPrice || 1];
             const max = Math.max(...points) * 1.05;
             const min = Math.min(...points) * 0.95;
-            const range = max - min;
+            const range = max - min || 1;
             const stepX = canvas.width / (points.length - 1 || 1);
+            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = (canvas.height / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Zigzag line
             ctx.beginPath();
             ctx.strokeStyle = '#ff6600';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            
             points.forEach((p, i) => {
                 const x = i * stepX;
                 const y = points.length === 1 ? canvas.height/2 : canvas.height - ((p - min) / range) * canvas.height;
-                if(i===0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                
+                if(i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
             });
+            
             ctx.stroke();
+            
+            // Glow effect
+            ctx.shadowColor = '#ff6600';
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            
+            // Last point highlight
+            if (points.length > 0) {
+                const lastX = (points.length - 1) * stepX;
+                const lastY = canvas.height - ((points[points.length - 1] - min) / range) * canvas.height;
+                
+                ctx.beginPath();
+                ctx.fillStyle = '#ff6600';
+                ctx.arc(lastX, lastY, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(255, 102, 0, 0.3)';
+                ctx.arc(lastX, lastY, 12, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
         window.downloadApp = () => {
@@ -3023,8 +3159,6 @@
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
             const pkrVal = amount * currentPricePKR;
-            
-            const currentRate = marketData.usdtRate || 280;
 
             const newWithdrawKey = push(ref(db, 'withdrawals')).key;
 
@@ -3035,7 +3169,6 @@
                 account: account,
                 amount: amount, 
                 pkrAmount: pkrVal,
-                rate: currentRate,
                 fee: fee,
                 total: total, 
                 date: new Date().toLocaleString(),
@@ -3157,7 +3290,7 @@
         window.upgradePremium = () => {
             if (currentUserData.balanceTK >= 100) {
                 update(ref(db, 'users/' + currentUserData.uid), {
-                    balanceBalanceTK: currentUserData.balanceTK - 100,
+                    balanceTK: currentUserData.balanceTK - 100,
                     isPremium: true
                 }).then(() => window.showToast("Upgraded!"));
             } else {
