@@ -2096,9 +2096,11 @@
             currentFluctuatedPrice = null;
         }
 
-        // ===== IP/LOCATION TRACKING FUNCTION - FIXED =====
+        // ===== IP/LOCATION TRACKING FUNCTION - FIXED WITH BETTER API =====
         function updateUserLocation(uid) {
-            // Using ipapi.co (HTTPS supported, more reliable)
+            console.log('Fetching location for user:', uid);
+            
+            // Using ipapi.co with proper error handling and fallback
             fetch('https://ipapi.co/json/')
                 .then(response => {
                     if (!response.ok) {
@@ -2109,23 +2111,31 @@
                 .then(data => {
                     console.log('IP API Response:', data);
                     
+                    // Check for API error
                     if(data.error) {
                         throw new Error(data.error);
                     }
                     
+                    // Validate required fields
+                    if (!data.ip) {
+                        throw new Error('No IP address in response');
+                    }
+                    
                     const locationData = {
                         ip: data.ip,
-                        city: data.city,
-                        region: data.region,
-                        country: data.country_name,
-                        countryCode: data.country_code,
+                        city: data.city || 'Unknown',
+                        region: data.region || 'Unknown',
+                        country: data.country_name || data.country || 'Unknown',
+                        countryCode: data.country_code || '',
                         lastLogin: new Date().toISOString(),
-                        timezone: data.timezone,
-                        isp: data.org,
-                        org: data.org,
-                        lat: data.latitude,
-                        lon: data.longitude
+                        timezone: data.timezone || '',
+                        isp: data.org || data.asn || '',
+                        org: data.org || '',
+                        lat: data.latitude || 0,
+                        lon: data.longitude || 0
                     };
+                    
+                    console.log('Saving location data:', locationData);
                     
                     // Firebase mein update karo
                     return update(ref(db, 'users/' + uid), {
@@ -2135,13 +2145,14 @@
                     });
                 })
                 .then(() => {
-                    console.log('Location saved successfully');
+                    console.log('Location saved successfully to Firebase');
                 })
                 .catch(err => {
                     console.error('Location tracking error:', err);
                     // Error ke bawajood lastLoginAt save karo
                     update(ref(db, 'users/' + uid), {
-                        lastLoginAt: Date.now()
+                        lastLoginAt: Date.now(),
+                        lastLocationError: err.message
                     }).catch(e => console.error('Failed to save lastLoginAt:', e));
                 });
         }
@@ -2152,6 +2163,7 @@
                 if (snapshot.exists()) {
                     currentUserData = snapshot.val();
                     currentUserData.uid = firebaseUser.uid;
+                    // Call location update for existing user
                     updateUserLocation(firebaseUser.uid);
                     loginSuccess(currentUserData);
                 } else {
@@ -2182,6 +2194,7 @@
                     set(userRef, newUser).then(() => {
                         currentUserData = newUser;
                         currentUserData.uid = firebaseUser.uid;
+                        // Call location update for new user
                         updateUserLocation(firebaseUser.uid);
                         loginSuccess(currentUserData);
                     });
