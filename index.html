@@ -1399,35 +1399,47 @@
                 <button class="btn btn-outline" style="margin-top: 20px;" onclick="window.showSection('wallet')">Back</button>
             </section>
 
-            <!-- Deposit -->
+            <!-- Deposit - ONLY TILL AND USDT -->
             <section id="view-deposit" class="section hidden">
                 <h2 class="text-orange">Deposit Funds</h2>
                 <p style="color: #aaa; margin-bottom: 20px;">Select payment method below.</p>
                 <div class="input-group">
                     <label>Method</label>
                     <select id="deposit-method" onchange="window.updateDepositDetails()">
-                        <option value="easypaisa">Easypaisa</option>
-                        <option value="jazzcash">JazzCash</option>
                         <option value="tillid">Till Id - (Raast)</option>
-                        <option value="qrpay">QR Pay</option>
+                        <option value="usdt">USDT Deposit</option>
                     </select>
                 </div>
-                <div style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; min-height: 85px; display:flex; align-items:center; justify-content:space-between;">
+                
+                <!-- TILL ID INFO -->
+                <div id="till-info-box" style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; min-height: 85px; display:flex; align-items:center; justify-content:space-between;">
                     <div id="text-info" style="flex:1;">
                         <div style="font-size: 0.8rem; color: #aaa;">Deposit To:</div>
-                        <div style="font-weight: bold; font-size: 1.1rem;" id="deposit-number">Select Method</div>
-                        <div style="font-size: 0.8rem; color: var(--primary);" id="deposit-name">---</div>
+                        <div style="font-weight: bold; font-size: 1.1rem;" id="deposit-number">03XX-XXXXXXX</div>
+                        <div style="font-size: 0.8rem; color: var(--primary);" id="deposit-name">Till Id (Raast)</div>
                     </div>
-                    <img id="deposit-qr-image" src="./qr.png" style="display:none; max-width: 150px; height: auto; border-radius: 8px;" alt="QR Code">
                     <button id="copy-btn" class="btn btn-sm btn-outline" onclick="window.copyDepositNumber()"><i class="fas fa-copy"></i></button>
                 </div>
+
+                <!-- USDT INFO - HIDDEN BY DEFAULT -->
+                <div id="usdt-info-box" class="hidden" style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;">
+                    <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 5px;">USDT Deposit Address (TRC20):</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" id="usdt-address" value="TH4ysLDzLdua4QQUb2djqCM8jt1XDSqubs" readonly style="background: #2a2a2a; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; flex: 1; font-family: monospace; font-size: 0.85rem;">
+                        <button class="btn btn-sm btn-outline" onclick="window.copyUSDTAddress()"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--warning); margin-top: 10px;">
+                        <i class="fas fa-exclamation-triangle"></i> Only send USDT (TRC20) to this address
+                    </div>
+                </div>
+
                 <div class="input-group">
-                    <label>Amount Sent (PKR)</label>
+                    <label>Amount Sent (PKR / USDT)</label>
                     <input type="number" id="deposit-amount" oninput="window.calculateDeposit()" placeholder="e.g. 500 PKR">
                 </div>
                 <div class="input-group">
-                    <label>Reference No / Transaction ID</label>
-                    <input type="text" id="deposit-ref" placeholder="TRX ID">
+                    <label>Reference No / Transaction ID / TX Hash</label>
+                    <input type="text" id="deposit-ref" placeholder="Enter Transaction ID or TX Hash">
                 </div>
                 <div id="min-deposit-warning" class="hidden" style="background: rgba(255,0,0,0.1); border: 1px solid var(--danger); padding: 10px; border-radius: 6px; margin-bottom: 15px; color: var(--danger); font-size: 0.85rem;">
                     <i class="fas fa-exclamation-triangle"></i> Minimum deposit is <span id="min-deposit-amount">500</span> PKR
@@ -1450,7 +1462,7 @@
                 <button class="btn btn-outline" style="margin-top: 10px;" onclick="window.showSection('wallet')">Back</button>
             </section>
 
-            <!-- Withdraw -->
+            <!-- Withdraw - UPDATED WITH PKR DISPLAY -->
             <section id="view-withdraw" class="section hidden">
                 <h2 class="text-orange">Withdraw Funds</h2>
                 <p style="color: #aaa; margin-bottom: 20px;">Withdraw TK to Your Account. Balance will be deducted immediately.</p>
@@ -1461,18 +1473,36 @@
                 <div class="input-group">
                     <label>Method</label>
                     <select id="withdraw-method">
-                        <option value="BANK">BANK</option>
+                        <option value="BINNACE USDT">BINNACE USDT</option>
                         <option value="jazzcash">JazzCash</option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>Account Number/ iban no.</label>
-                    <input type="text" id="withdraw-account" placeholder="0300...">
+                    <label>Account Number/ USDT-TRC20 </label>
+                    <input type="text" id="withdraw-account" placeholder="0300.. Txyz. ">
                 </div>
                 <div class="input-group">
                     <label>Amount (TK)</label>
                     <input type="number" id="withdraw-amount" placeholder="Tk coin" oninput="window.calculateWithdraw()">
                 </div>
+                
+                <!-- PKR VALUE DISPLAY - NEW -->
+                <div style="background: linear-gradient(135deg, rgba(0,200,83,0.2), rgba(0,200,83,0.05)); border: 1px solid var(--success); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">You will receive (PKR):</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);"><span id="withdraw-pkr-amount">0.00</span> PKR</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Current Rate</div>
+                            <div style="font-size: 0.9rem; color: white;">1 TK = <span id="withdraw-current-rate">0.00</span> PKR</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,200,83,0.3); font-size: 0.8rem; color: var(--text-muted);">
+                        <i class="fas fa-info-circle"></i> Amount after <span id="withdraw-fee-percent">5</span>% fee deduction
+                    </div>
+                </div>
+
                 <div style="background: #222; padding: 10px; border-radius: 6px; margin-bottom: 20px; color: #aaa;">
                     <small>Estimated Receive: <strong style="color: white; font-size: 1.1rem;"><span id="withdraw-calc-usdt">0.00</span> PKR</strong></small>
                 </div>
@@ -2066,41 +2096,53 @@
             currentFluctuatedPrice = null;
         }
 
-        // ===== IP/LOCATION TRACKING FUNCTION =====
+        // ===== IP/LOCATION TRACKING FUNCTION - FIXED =====
         function updateUserLocation(uid) {
-            fetch('http://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query')
-                .then(response => response.json())
+            // Using ipapi.co (HTTPS supported, more reliable)
+            fetch('https://ipapi.co/json/')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.status);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if(data.status !== 'success') {
-                        console.log('IP API error:', data.message);
-                        throw new Error(data.message || 'IP lookup failed');
+                    console.log('IP API Response:', data);
+                    
+                    if(data.error) {
+                        throw new Error(data.error);
                     }
                     
                     const locationData = {
-                        ip: data.query,
+                        ip: data.ip,
                         city: data.city,
-                        region: data.regionName,
-                        country: data.country,
-                        countryCode: data.countryCode,
+                        region: data.region,
+                        country: data.country_name,
+                        countryCode: data.country_code,
                         lastLogin: new Date().toISOString(),
                         timezone: data.timezone,
-                        isp: data.isp,
+                        isp: data.org,
                         org: data.org,
-                        lat: data.lat,
-                        lon: data.lon
+                        lat: data.latitude,
+                        lon: data.longitude
                     };
                     
-                    update(ref(db, 'users/' + uid), {
+                    // Firebase mein update karo
+                    return update(ref(db, 'users/' + uid), {
                         lastLocation: locationData,
-                        lastIP: data.query,
+                        lastIP: data.ip,
                         lastLoginAt: Date.now()
                     });
                 })
+                .then(() => {
+                    console.log('Location saved successfully');
+                })
                 .catch(err => {
-                    console.log('Location tracking error:', err);
+                    console.error('Location tracking error:', err);
+                    // Error ke bawajood lastLoginAt save karo
                     update(ref(db, 'users/' + uid), {
                         lastLoginAt: Date.now()
-                    });
+                    }).catch(e => console.error('Failed to save lastLoginAt:', e));
                 });
         }
 
@@ -3009,37 +3051,38 @@
             });
         };
 
+        // ===== UPDATED DEPOSIT - ONLY TILL AND USDT =====
         window.updateDepositDetails = () => {
             const method = document.getElementById('deposit-method').value;
+            const tillBox = document.getElementById('till-info-box');
+            const usdtBox = document.getElementById('usdt-info-box');
             const displayNum = document.getElementById('deposit-number');
             const displayName = document.getElementById('deposit-name');
-            const qrImg = document.getElementById('deposit-qr-image');
-            const textInfo = document.getElementById('text-info');
-            const copyBtn = document.getElementById('copy-btn');
 
-            textInfo.style.display = 'block';
-            qrImg.style.display = 'none';
-            copyBtn.style.display = 'block';
-
-            if (method === 'easypaisa') { 
-                displayNum.innerText = appSettings.easypaisa; 
-                displayName.innerText = "Easypaisa"; 
-            } 
-            else if (method === 'jazzcash') { 
-                displayNum.innerText = appSettings.jazzcash; 
-                displayName.innerText = "JazzCash"; 
-            }
-            else if (method === 'tillid') { 
-                displayNum.innerText = appSettings.tillid; 
+            if (method === 'tillid') {
+                // Show Till ID box, hide USDT box
+                tillBox.classList.remove('hidden');
+                usdtBox.classList.add('hidden');
+                
+                displayNum.innerText = appSettings.tillid || '03XX-XXXXXXX'; 
                 displayName.innerText = "Till Id (Raast)"; 
+            } 
+            else if (method === 'usdt') {
+                // Show USDT box, hide Till ID box
+                tillBox.classList.add('hidden');
+                usdtBox.classList.remove('hidden');
             }
-            else if (method === 'qrpay') { 
-                textInfo.style.display = 'none';
-                copyBtn.style.display = 'none';
-                qrImg.style.display = 'block';
-                qrImg.src = "./qr.png"; 
-            }
+            
             window.calculateDeposit();
+        };
+
+        window.copyUSDTAddress = () => {
+            const address = document.getElementById('usdt-address').value;
+            navigator.clipboard.writeText(address).then(() => {
+                window.showToast("USDT Address Copied!", "success");
+            }).catch(() => {
+                window.showToast("Failed to copy", "error");
+            });
         };
 
         window.calculateDeposit = () => {
@@ -3084,7 +3127,7 @@
             }
             
             if (!amountInput || amountInput <= 0) return window.showToast("Enter valid amount", "error");
-            if (!refId) return window.showToast("Enter Transaction ID", "error");
+            if (!refId) return window.showToast("Enter Transaction ID or TX Hash", "error");
             
             const currentPrice = getCurrentPrice();
             const currentPricePKR = currentPrice * marketData.usdtRate;
@@ -3096,7 +3139,7 @@
             const depositData = {
                 userId: currentUserData.uid,
                 userEmail: currentUserData.email,
-                method: method,
+                method: method, // 'tillid' or 'usdt'
                 amount: receiveTk,
                 rawAmount: pkrAmount,
                 tkPriceAtDeposit: currentPrice,
@@ -3131,6 +3174,7 @@
             });
         };
 
+        // ===== UPDATED WITHDRAW WITH PKR DISPLAY =====
         window.calculateWithdraw = () => {
             const tk = parseFloat(document.getElementById('withdraw-amount').value) || 0;
             
@@ -3139,7 +3183,14 @@
             
             const pkrVal = tk * currentPricePKR;
             
+            // Update PKR display
             document.getElementById('withdraw-calc-usdt').innerText = pkrVal.toFixed(2);
+            document.getElementById('withdraw-pkr-amount').innerText = pkrVal.toFixed(2);
+            document.getElementById('withdraw-current-rate').innerText = currentPricePKR.toFixed(2);
+            
+            // Update fee percent display
+            const feePercent = currentUserData?.isPremium ? 0 : (appSettings.withdrawFee * 100);
+            document.getElementById('withdraw-fee-percent').innerText = feePercent;
         }
 
         window.submitWithdraw = () => {
@@ -3162,13 +3213,16 @@
 
             const newWithdrawKey = push(ref(db, 'withdrawals')).key;
 
+            // ===== UPDATED WITHDRAW DATA WITH PKR AMOUNT =====
             const withdrawData = {
                 userId: currentUserData.uid,
                 userEmail: currentUserData.email,
                 method: method,
                 account: account,
-                amount: amount, 
-                pkrAmount: pkrVal,
+                amount: amount, // TK amount
+                pkrAmount: pkrVal, // PKR amount - YEH NAYA FIELD HAI
+                currentRate: currentPricePKR, // Current rate - YEH BHI NAYA
+                pkrDisplay: pkrVal.toFixed(2) + ' PKR', // Readable format
                 fee: fee,
                 total: total, 
                 date: new Date().toLocaleString(),
