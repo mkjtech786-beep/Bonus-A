@@ -3,603 +3,606 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TK Coin - Hold & Earn</title>
+    <title>TK Coin Pro</title>
     <style>
         :root {
-            --primary: #ff6600;
-            --primary-dark: #cc5200;
-            --bg-dark: #121212;
-            --bg-card: #1e1e1e;
-            --text-light: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --success: #00c853;
-            --danger: #ff3d00;
-            --blue: #2979ff;
-            --warning: #ffc107;
-            --purple: #9c27b0;
-            --cyan: #00bcd4;
+            --primary: #00d4ff;
+            --secondary: #ff00a0;
+            --accent: #ffd700;
+            --bg-dark: #050508;
+            --bg-card: #0a0a0f;
+            --bg-glass: rgba(10, 10, 15, 0.8);
+            --text-light: #ffffff;
+            --text-muted: #666666;
+            --success: #00ff88;
+            --danger: #ff0055;
+            --warning: #ffaa00;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
+            background: var(--bg-dark);
             color: var(--text-light);
+            min-height: 100vh;
             overflow-x: hidden;
-            padding-bottom: 70px;
         }
 
         .hidden { display: none !important; }
-        .text-orange { color: var(--primary); }
-        .text-blue { color: var(--blue); }
-        .text-green { color: var(--success); }
-        .text-red { color: var(--danger); }
-        .text-warning { color: var(--warning); }
-        .text-purple { color: var(--purple); }
-        .text-cyan { color: var(--cyan); }
-        
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            transition: 0.2s;
-        }
-        .btn:hover { background: var(--primary-dark); }
-        .btn:disabled { background: #555; cursor: not-allowed; }
-        .btn-outline { background: transparent; border:1px solid var(--primary); color: var(--primary); }
-        .btn-sm { padding: 5px 10px; font-size: 0.8rem; width: auto; }
-        .btn-success { background: var(--success); }
-        .btn-danger { background: var(--danger); }
-        .btn-purple { background: var(--purple); }
-        
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px;
-            background: #2a2a2a;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 6px;
-            outline: none;
-        }
-        .input-group input:focus { border-color: var(--primary); }
 
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-        .toast {
-            background: var(--bg-card);
-            border-left: 4px solid var(--primary);
-            color: white;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s ease;
-        }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-
-        #receive-popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* LOGIN SCREEN STYLES */
-        .coins-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 0;
-            display: none;
-        }
-
-        #auth-screen .coins-container {
-            display: block;
-        }
-
-        .coin {
-            position: absolute;
-            color: #ff6600;
-            font-size: 20px;
-            animation: fall linear infinite;
-            opacity: 0.6;
-            text-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.6;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
+        /* ===== AUTH SCREEN ===== */
         #auth-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #121212 0%, #1a0f00 50%, #121212 100%);
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #050508 0%, #1a0033 50%, #050508 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             z-index: 1000;
         }
 
         .auth-box {
-            background: rgba(30, 30, 30, 0.95);
-            padding: 40px 35px;
-            border-radius: 25px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 24px;
+            padding: 40px;
             width: 90%;
             max-width: 400px;
-            border: 1px solid rgba(255, 102, 0, 0.3);
-            box-shadow: 
-                0 20px 60px rgba(255, 102, 0, 0.2),
-                0 0 100px rgba(255, 102, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
-            z-index: 10;
-            animation: boxFloat 4s ease-in-out infinite, boxGlow 3s ease-in-out infinite alternate;
-            backdrop-filter: blur(20px);
-            transform-style: preserve-3d;
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.2);
         }
 
-        @keyframes boxFloat {
-            0%, 100% { transform: translateY(0px) rotateX(0deg); }
-            50% { transform: translateY(-15px) rotateX(2deg); }
-        }
-
-        @keyframes boxGlow {
-            0% { box-shadow: 0 20px 60px rgba(255, 102, 0, 0.2), 0 0 100px rgba(255, 102, 0, 0.1); }
-            100% { box-shadow: 0 25px 70px rgba(255, 102, 0, 0.3), 0 0 120px rgba(255, 102, 0, 0.2); }
-        }
-
-        .logo-animation {
+        .auth-logo {
             text-align: center;
-            margin-bottom: 35px;
-            animation: logoPop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 30px;
         }
 
-        @keyframes logoPop {
-            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-            70% { transform: scale(1.1) rotate(10deg); }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        .coin-icon {
-            font-size: 4.5rem;
-            color: #ff6600;
-            display: block;
-            margin-bottom: 15px;
-            animation: 
-                coinSpin 3s linear infinite,
-                coinGlow 2s ease-in-out infinite alternate,
-                coinBounce 1s ease-in-out infinite;
-            filter: drop-shadow(0 0 30px rgba(255, 102, 0, 0.6));
-            background: linear-gradient(135deg, #ff6600, #ff9100);
+        .auth-logo i {
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5));
         }
 
-        @keyframes coinSpin {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
-        }
-
-        @keyframes coinGlow {
-            0% { filter: drop-shadow(0 0 20px rgba(255, 102, 0, 0.5)) brightness(1); }
-            100% { filter: drop-shadow(0 0 50px rgba(255, 102, 0, 0.9)) brightness(1.3); }
-        }
-
-        @keyframes coinBounce {
-            0%, 100% { transform: translateY(0) rotateY(0deg); }
-            50% { transform: translateY(-10px) rotateY(180deg); }
-        }
-
-        .app-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ff6600, #ff9100, #ff6600);
+        .auth-logo h1 {
+            font-size: 2rem;
+            margin-top: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 0;
-            text-shadow: 0 0 30px rgba(255, 102, 0, 0.3);
-            letter-spacing: 3px;
-            animation: textShimmer 3s linear infinite;
-            background-size: 200% auto;
         }
 
-        @keyframes textShimmer {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-
-        .tagline {
-            color: #888;
-            font-size: 0.85rem;
-            margin-top: 8px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            animation: fadeInUp 1s ease 0.5s both;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #auth-screen .input-group {
+        .input-group {
             margin-bottom: 20px;
-            animation: slideInLeft 0.6s ease both;
         }
 
-        #auth-screen .input-group:nth-child(1) { animation-delay: 0.2s; }
-        #auth-screen .input-group:nth-child(2) { animation-delay: 0.3s; }
-        #auth-screen .input-group:nth-child(3) { animation-delay: 0.4s; }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
         }
 
         .auth-btn {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #ff6600, #ff9100);
-            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
             border-radius: 12px;
-            cursor: pointer;
-            font-weight: bold;
+            color: white;
             font-size: 1.1rem;
-            margin-top: 25px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            animation: slideInUp 0.6s ease 0.5s both;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .auth-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.6s;
-        }
-
-        .auth-btn:hover::before {
-            left: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
         }
 
         .auth-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 
-                0 15px 40px rgba(255, 102, 0, 0.4),
-                0 0 60px rgba(255, 102, 0, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
         }
 
         .auth-toggle {
             text-align: center;
-            margin-top: 25px;
-            font-size: 0.95rem;
+            margin-top: 20px;
+            color: var(--primary);
             cursor: pointer;
-            color: #ff6600;
-            transition: all 0.3s ease;
-            position: relative;
-            display: inline-block;
-            width: 100%;
-            animation: fadeIn 1s ease 0.7s both;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* ===== MAIN APP ===== */
+        #app-container {
+            padding-bottom: 80px;
         }
 
-        /* MAIN APP STYLES */
-        header {
-            background: var(--bg-card);
-            padding: 15px;
+        /* Header */
+        .app-header {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
             position: sticky;
             top: 0;
             z-index: 100;
         }
-        .logo { font-size: 1.2rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 5px; }
-        .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; }
-        
-        .avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+
+        .app-logo {
+            font-size: 1.3rem;
             font-weight: bold;
-            font-size: 1.2rem;
-            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--bg-card);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #333;
-            z-index: 100;
-        }
-        .nav-item {
-            position: relative;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.8rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-        }
-        .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 1.2rem; margin-bottom: 2px; }
-
-        .nav-badge {
-            position: absolute;
-            top: 5px;
-            right: 15px;
-            background-color: var(--danger);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .balance-pill {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(255, 0, 160, 0.2));
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            padding: 8px 16px;
+            border-radius: 20px;
             font-weight: bold;
-            z-index: 10;
+            color: var(--primary);
         }
 
-        .section { padding: 15px; max-width: 600px; margin: 0 auto; }
-        
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary), #ff9100);
-            color: #fff;
+        /* ===== HOME/MARKET SCREEN ===== */
+        .market-section {
             padding: 20px;
-            border-radius: 15px;
+        }
+
+        .price-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 0, 160, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
             margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(255, 102, 0, 0.3);
         }
-        .balance-title { font-size: 0.9rem; opacity: 0.9; }
-        .balance-amount { font-size: 2rem; font-weight: bold; margin: 5px 0; }
-        
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .menu-card {
+
+        .price-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .price-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .price-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .price-change.up {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--success);
+        }
+
+        .price-change.down {
+            background: rgba(255, 0, 85, 0.2);
+            color: var(--danger);
+        }
+
+        .market-chart {
+            height: 200px;
             background: var(--bg-card);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #marketCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .action-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
             padding: 20px;
-            border-radius: 12px;
             text-align: center;
             cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+
+        .action-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .menu-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,102,0,0.2); }
-        .menu-icon { font-size: 1.5rem; margin-bottom: 10px; display: block; }
-
-        .live-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--danger);
-            color: white;
-            font-size: 0.6rem;
-            padding: 2px 6px;
-            border-radius: 10px;
-            animation: pulse 1.5s infinite;
+            margin: 0 auto 10px;
+            font-size: 1.5rem;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+        .action-card.deposit .action-icon {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--success);
         }
 
-        /* ===== TRADING STYLES ===== */
-        .trading-container {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 2px solid var(--primary);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 40px rgba(255,102,0,0.3);
-            position: relative;
-            overflow: hidden;
+        .action-card.withdraw .action-icon {
+            background: rgba(255, 0, 85, 0.2);
+            color: var(--danger);
         }
 
-        .trading-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,102,0,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        /* ===== TRADING SCREEN - VIP LOOK ===== */
+        .trading-section {
+            padding: 15px;
+            min-height: calc(100vh - 160px);
         }
 
         .trading-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 15px;
         }
 
-        .trading-status {
+        .trading-title {
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .status-dot {
-            width: 10px;
-            height: 10px;
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: #ff4444;
             border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 10px var(--success);
             animation: blink 1s infinite;
         }
 
         @keyframes blink {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.3; }
         }
 
-        .countdown-timer {
-            font-size: 3rem;
-            font-weight: bold;
-            text-align: center;
-            color: var(--primary);
-            text-shadow: 0 0 20px rgba(255,102,0,0.5);
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
+        /* Main Trading Card - VIP Glass Effect */
+        .trading-terminal {
+            background: linear-gradient(135deg, rgba(10,10,15,0.95), rgba(20,0,40,0.9));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 
+                0 0 40px rgba(0, 212, 255, 0.15),
+                inset 0 1px 0 rgba(255,255,255,0.05);
             position: relative;
-            z-index: 1;
+            overflow: hidden;
         }
 
-        .candle-chart {
-            background: rgba(0,0,0,0.5);
+        .trading-terminal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        /* Mode Badge */
+        .mode-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 10px;
             border-radius: 12px;
-            height: 200px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mode-badge.auto {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .mode-badge.loss {
+            background: rgba(255, 0, 85, 0.3);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            animation: shake 2s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        /* Countdown */
+        .countdown-box {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .countdown-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .countdown-value {
+            font-size: 4rem;
+            font-weight: 200;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            line-height: 1;
+        }
+
+        /* Candlestick Chart Container */
+        .chart-container {
+            height: 220px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
-            border: 1px solid #333;
         }
 
-        #tradingCanvas {
+        #tradingChart {
             width: 100%;
             height: 100%;
         }
 
-        .current-price {
-            text-align: center;
+        /* Price Info Bar */
+        .price-info-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
             margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
         }
 
-        .price-value {
-            font-size: 2.5rem;
+        .price-info-item {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .price-info-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .price-info-value {
+            font-size: 1.1rem;
             font-weight: bold;
-            color: white;
-            text-shadow: 0 0 10px currentColor;
+            color: var(--text-light);
         }
 
-        .price-change {
-            font-size: 1rem;
+        .price-info-value.up { color: var(--success); }
+        .price-info-value.down { color: var(--danger); }
+
+        /* Active Bet Display */
+        .active-bet-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .active-bet-box.show {
+            display: block;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            to { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
+        }
+
+        .active-bet-label {
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .active-bet-amount {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .active-bet-direction {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
             margin-top: 5px;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
         }
 
-        .price-up { color: var(--success); }
-        .price-down { color: var(--danger); }
+        .active-bet-direction.up {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--success);
+        }
 
+        .active-bet-direction.down {
+            background: rgba(255, 0, 85, 0.2);
+            color: var(--danger);
+        }
+
+        /* Bet Amount Input */
+        .bet-input-group {
+            margin-bottom: 20px;
+        }
+
+        .bet-input-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .bet-input-label span {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .bet-input-label .limits {
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+
+        .bet-input-wrapper {
+            position: relative;
+        }
+
+        .bet-input {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 16px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .bet-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Quick Amounts */
+        .quick-amounts {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .quick-amount-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            color: var(--primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-amount-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        /* Bet Buttons */
         .bet-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
         }
 
         .bet-btn {
-            padding: 20px;
+            padding: 25px;
             border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            font-weight: bold;
+            border-radius: 16px;
             font-size: 1.2rem;
-            transition: all 0.3s ease;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -608,547 +611,542 @@
             overflow: hidden;
         }
 
-        .bet-btn.up {
-            background: linear-gradient(135deg, var(--success), #00ff88);
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,200,83,0.3);
+        .bet-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
         }
 
-        .bet-btn.down {
-            background: linear-gradient(135deg, var(--danger), #ff6b6b);
-            color: white;
-            box-shadow: 0 10px 30px rgba(255,61,0,0.3);
+        .bet-btn:hover::before {
+            left: 100%;
         }
 
-        .bet-btn:hover:not(:disabled) {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        .bet-btn-up {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.05));
+            border: 2px solid var(--success);
+            color: var(--success);
+            box-shadow: 0 5px 25px rgba(0, 255, 136, 0.2);
+        }
+
+        .bet-btn-up:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.4), rgba(0, 255, 136, 0.1));
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.4);
+        }
+
+        .bet-btn-down {
+            background: linear-gradient(135deg, rgba(255, 0, 85, 0.2), rgba(255, 0, 85, 0.05));
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            box-shadow: 0 5px 25px rgba(255, 0, 85, 0.2);
+        }
+
+        .bet-btn-down:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(255, 0, 85, 0.4), rgba(255, 0, 85, 0.1));
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(255, 0, 85, 0.4);
         }
 
         .bet-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
-            transform: none;
+            transform: none !important;
         }
 
-        .bet-btn.placed {
-            animation: glow 1.5s ease-in-out infinite alternate;
+        .bet-btn i {
+            font-size: 1.5rem;
         }
 
-        @keyframes glow {
-            from { box-shadow: 0 0 20px currentColor; }
-            to { box-shadow: 0 0 40px currentColor, 0 0 60px currentColor; }
+        /* Trading History */
+        .history-section {
+            margin-top: 25px;
         }
 
-        .bet-amount-section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .amount-presets {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .preset-btn {
-            background: rgba(255,102,0,0.2);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .preset-btn:hover, .preset-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .trading-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .trading-stat {
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .trading-stat-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-
-        .trading-stat-value {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .bet-history {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #333;
-        }
-
-        .bet-history-item {
+        .history-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #333;
-        }
-
-        .bet-history-item:last-child {
-            border-bottom: none;
-        }
-
-        .bet-result-win {
-            color: var(--success);
-            font-weight: bold;
-        }
-
-        .bet-result-loss {
-            color: var(--danger);
-            font-weight: bold;
-        }
-
-        .direction-badge {
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .direction-badge.up {
-            background: rgba(0,200,83,0.2);
-            color: var(--success);
-        }
-
-        .direction-badge.down {
-            background: rgba(255,61,0,0.2);
-            color: var(--danger);
-        }
-
-        .glow-text {
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        .vip-border {
-            border: 2px solid gold;
-            box-shadow: 0 0 20px rgba(255,215,0,0.3);
-        }
-
-        /* Other existing styles... */
-        .chat-box {
-            background: var(--bg-card);
-            height: 60vh;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #333;
-        }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
-        .message { max-width: 80%; padding: 8px 12px; border-radius: 10px; font-size: 0.9rem; word-wrap: break-word;}
-        .msg-admin { align-self: flex-start; background: #333; color: white; }
-        .msg-user { align-self: flex-end; background: var(--primary); color: white; }
-        .chat-input-area { padding: 10px; display: flex; gap: 10px; border-top: 1px solid #333; }
-
-        .deposit-info-box {
-            background: rgba(255,102,0,0.1);
-            border: 1px solid var(--primary);
-            padding: 15px;
-            border-radius: 8px;
             margin-bottom: 15px;
         }
 
-        /* Savings Styles */
-        .savings-plan-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .history-title {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
             gap: 10px;
-            margin: 15px 0;
         }
-        
-        .savings-plan-btn {
+
+        .history-item {
             background: var(--bg-card);
-            border: 2px solid #333;
-            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
             padding: 15px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .history-item.win {
+            border-left: 3px solid var(--success);
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.05), transparent);
+        }
+
+        .history-item.loss {
+            border-left: 3px solid var(--danger);
+            background: linear-gradient(90deg, rgba(255, 0, 85, 0.05), transparent);
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .history-direction {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: bold;
+        }
+
+        .history-direction.up { color: var(--success); }
+        .history-direction.down { color: var(--danger); }
+
+        .history-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .history-result {
+            text-align: right;
+        }
+
+        .history-amount {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .history-pnl {
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        .history-pnl.win { color: var(--success); }
+        .history-pnl.loss { color: var(--danger); }
+
+        /* ===== BOTTOM NAVIGATION ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: all 0.3s;
             cursor: pointer;
-            transition: 0.2s;
+            position: relative;
         }
-        
-        .savings-plan-btn:hover {
-            border-color: var(--primary);
+
+        .nav-item i {
+            font-size: 1.3rem;
+            transition: all 0.3s;
         }
-        
-        .savings-plan-btn.selected {
-            border-color: var(--success);
-            background: rgba(0,200,83,0.1);
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-5px);
+            filter: drop-shadow(0 0 10px var(--primary));
+        }
+
+        .nav-item.trading i {
+            color: var(--accent);
+        }
+
+        .nav-item.trading.active i {
+            filter: drop-shadow(0 0 15px var(--accent));
+        }
+
+        /* Trading pulse animation on nav */
+        .nav-item.trading::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse-gold 2s infinite;
+            display: none;
+        }
+
+        .nav-item.trading.active::after {
+            display: block;
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        /* ===== WALLET SCREEN ===== */
+        .wallet-section {
+            padding: 20px;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(255, 0, 160, 0.15));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .wallet-balance-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .wallet-balance {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .wallet-pkr {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border-left: 3px solid var(--primary);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 380px) {
+            .countdown-value { font-size: 3rem; }
+            .bet-btn { padding: 20px; font-size: 1rem; }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div id="toast-container"></div>
 
-    <div id="receive-popup" class="hidden">
-        <i class="fas fa-hand-holding-usd" style="font-size: 5rem; color: gold; margin-bottom: 20px; animation: bounce 1s infinite;"></i>
-        <h2 style="color: white;">Coins Received!</h2>
-        <p style="color: #ccc; margin-top: 10px;">You received <span id="popup-amount" class="text-green" style="font-weight: bold;">0</span> TK</p>
-        <button class="btn" style="margin-top: 30px; width: auto; padding: 10px 40px;" onclick="window.closePopup()">OK</button>
-    </div>
-
-    <!-- Coin Rain Background -->
-    <div class="coins-container" id="coins-container"></div>
-
-    <!-- LOGIN SCREEN -->
+    <!-- AUTH SCREEN -->
     <div id="auth-screen">
-        <div class="auth-box" id="auth-box">
-            <div class="logo-animation">
-                <i class="fas fa-coins coin-icon"></i>
-                <h1 class="app-title">TK Coin</h1>
-                <p class="tagline">Hold & Earn</p>
+        <div class="auth-box">
+            <div class="auth-logo">
+                <i class="fas fa-coins"></i>
+                <h1>TK Coin Pro</h1>
             </div>
             
             <form id="auth-form">
                 <div class="input-group">
-                    <label>Email Address</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="auth-email" required placeholder="user@example.com" autocomplete="email">
-                    </div>
+                    <label>Email</label>
+                    <input type="email" id="auth-email" placeholder="user@example.com" required>
                 </div>
-                
                 <div class="input-group">
                     <label>Password</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="auth-pass" required placeholder="••••••••" autocomplete="current-password">
-                    </div>
+                    <input type="password" id="auth-pass" placeholder="••••••••" required>
                 </div>
-                
                 <div class="input-group hidden" id="ref-group">
                     <label>Referral Code (Optional)</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-gift input-icon"></i>
-                        <input type="text" id="auth-ref" placeholder="Enter Referral Code">
-                    </div>
+                    <input type="text" id="auth-ref" placeholder="Enter code">
                 </div>
-                
                 <button type="submit" class="auth-btn" id="auth-btn">
-                    <span class="btn-text">Login</span>
-                    <div class="spinner"></div>
-                    <i class="fas fa-arrow-right btn-icon"></i>
+                    <span id="auth-btn-text">Login</span>
                 </button>
             </form>
             
-            <div class="auth-toggle" onclick="window.toggleAuthMode()">
+            <div class="auth-toggle" onclick="toggleAuthMode()">
                 <span id="toggle-text">Don't have an account? Signup</span>
             </div>
         </div>
     </div>
 
+    <!-- MAIN APP -->
     <div id="app-container" class="hidden">
-        <div class="ticker-wrap">
-            <div class="ticker" id="news-ticker"></div>
-        </div>
-
-        <header>
-            <div class="logo">
-                <i class="fas fa-coins"></i> TK Coin
-                <span id="header-premium-badge" class="hidden blue-tick"><i class="fas fa-check-circle"></i></span>
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="app-logo">
+                <i class="fas fa-bolt"></i> TK Coin
             </div>
-            <div class="user-info" onclick="window.showSection('profile')">
-                <div style="text-align: right;">
-                    <div id="header-name">User</div>
-                    <div id="header-balance" style="color: var(--primary);">0 TK</div>
-                </div>
-                <div id="header-avatar" class="avatar">U</div>
+            <div class="balance-pill">
+                <i class="fas fa-wallet"></i> <span id="header-balance">0.00</span> TK
             </div>
         </header>
 
-        <main id="user-views">
-            <!-- Market -->
-            <section id="view-market" class="section">
-                <div class="balance-card">
-                    <div class="balance-title">Current TK Price</div>
-                    <div class="balance-amount"><span id="market-price">0.00</span> PKR</div>
-                    <small style="opacity: 0.8;">Total Hold TK: 27M+ Coins</small>
+        <!-- VIEWS -->
+        <main id="main-views">
+
+            <!-- HOME/MARKET VIEW -->
+            <section id="view-home" class="market-section">
+                <div class="price-card">
+                    <div class="price-label">Current Price</div>
+                    <div class="price-value" id="market-price">280.00</div>
+                    <div class="price-change up" id="price-change">
+                        <i class="fas fa-arrow-up"></i> +2.45%
+                    </div>
                 </div>
 
-                <!-- ===== NEW: LIVE TRADING SECTION ===== -->
-                <div class="trading-container" id="trading-section">
-                    <div class="trading-header">
-                        <div>
-                            <h3 style="color: var(--primary); margin: 0;">
-                                <i class="fas fa-bolt"></i> Live Trading
-                            </h3>
-                            <small style="color: var(--text-muted);">5 Second Rounds</small>
+                <div class="market-chart">
+                    <canvas id="marketCanvas"></canvas>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="action-card deposit" onclick="showSection('deposit')">
+                        <div class="action-icon">
+                            <i class="fas fa-arrow-down"></i>
                         </div>
-                        <div class="trading-status">
-                            <div class="status-dot" id="trading-status-dot"></div>
-                            <span id="trading-status-text" style="color: var(--success); font-size: 0.85rem;">Live</span>
+                        <div>Deposit</div>
+                    </div>
+                    <div class="action-card withdraw" onclick="showSection('withdraw')">
+                        <div class="action-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div>Withdraw</div>
+                    </div>
+                </div>
+
+                <h3 style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
+                    Recent Activity
+                </h3>
+                <div id="home-history">
+                    <div style="text-align:center; color:#666; padding: 30px;">
+                        <i class="fas fa-history" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        No recent activity
+                    </div>
+                </div>
+            </section>
+
+            <!-- TRADING VIEW - SEPARATE SCREEN -->
+            <section id="view-trading" class="trading-section hidden">
+                
+                <div class="trading-header">
+                    <div class="trading-title">
+                        <i class="fas fa-chart-line" style="color: var(--accent);"></i>
+                        <span style="background: linear-gradient(90deg, var(--accent), #ffaa00); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Live Trading</span>
+                    </div>
+                    <div class="live-badge">
+                        <div class="live-dot"></div>
+                        <span>LIVE</span>
+                    </div>
+                </div>
+
+                <!-- Main Trading Terminal -->
+                <div class="trading-terminal">
+                    <div class="mode-badge auto" id="trading-mode-badge">AUTO MODE</div>
+                    
+                    <!-- Countdown -->
+                    <div class="countdown-box">
+                        <div class="countdown-label">Next Round</div>
+                        <div class="countdown-value" id="countdown">05</div>
+                    </div>
+
+                    <!-- Candlestick Chart -->
+                    <div class="chart-container">
+                        <canvas id="tradingChart"></canvas>
+                    </div>
+
+                    <!-- Price Info -->
+                    <div class="price-info-bar">
+                        <div class="price-info-item">
+                            <div class="price-info-label">Entry</div>
+                            <div class="price-info-value" id="entry-price">--</div>
+                        </div>
+                        <div class="price-info-item">
+                            <div class="price-info-label">Current</div>
+                            <div class="price-info-value up" id="current-price-display">--</div>
+                        </div>
+                        <div class="price-info-item">
+                            <div class="price-info-label">Change</div>
+                            <div class="price-info-value" id="price-change-display">--</div>
                         </div>
                     </div>
 
-                    <div class="countdown-timer" id="countdown-timer">05</div>
-
-                    <div class="candle-chart">
-                        <canvas id="tradingCanvas"></canvas>
-                    </div>
-
-                    <div class="current-price">
-                        <div class="price-value" id="current-price">0.00</div>
-                        <div class="price-change" id="price-change">
-                            <i class="fas fa-arrow-up"></i> 0.00%
+                    <!-- Active Bet -->
+                    <div class="active-bet-box" id="active-bet-box">
+                        <div class="active-bet-label">Active Position</div>
+                        <div class="active-bet-amount">
+                            <span id="active-bet-amount">0</span> TK
+                        </div>
+                        <div class="active-bet-direction up" id="active-bet-direction">
+                            <i class="fas fa-arrow-up"></i> UP
                         </div>
                     </div>
 
-                    <div class="bet-amount-section">
-                        <label style="color: var(--text-muted); font-size: 0.9rem;">Bet Amount (TK)</label>
-                        <input type="number" id="bet-amount" placeholder="Enter amount" style="margin-top: 10px; font-size: 1.2rem; text-align: center;">
-                        <div class="amount-presets">
-                            <button class="preset-btn" onclick="setBetAmount(10)">10</button>
-                            <button class="preset-btn" onclick="setBetAmount(50)">50</button>
-                            <button class="preset-btn" onclick="setBetAmount(100)">100</button>
-                            <button class="preset-btn" onclick="setBetAmount(500)">500</button>
+                    <!-- Bet Input -->
+                    <div class="bet-input-group">
+                        <div class="bet-input-label">
+                            <span>Bet Amount</span>
+                            <span class="limits">Min: <span id="min-bet">10</span> | Max: <span id="max-bet">1000</span></span>
+                        </div>
+                        <div class="bet-input-wrapper">
+                            <input type="number" class="bet-input" id="bet-amount" placeholder="0.00" min="10">
+                        </div>
+                        <div class="quick-amounts">
+                            <button class="quick-amount-btn" onclick="setBetAmount(10)">10</button>
+                            <button class="quick-amount-btn" onclick="setBetAmount(50)">50</button>
+                            <button class="quick-amount-btn" onclick="setBetAmount(100)">100</button>
+                            <button class="quick-amount-btn" onclick="setBetAmount(500)">500</button>
                         </div>
                     </div>
 
-                    <div class="trading-stats">
-                        <div class="trading-stat">
-                            <div class="trading-stat-label">Up Pool</div>
-                            <div class="trading-stat-value text-green" id="up-pool">0 TK</div>
-                        </div>
-                        <div class="trading-stat">
-                            <div class="trading-stat-label">Pool Size</div>
-                            <div class="trading-stat-value text-orange" id="total-pool">0 TK</div>
-                        </div>
-                        <div class="trading-stat">
-                            <div class="trading-stat-label">Down Pool</div>
-                            <div class="trading-stat-value text-danger" id="down-pool">0 TK</div>
-                        </div>
-                    </div>
-
+                    <!-- Bet Buttons -->
                     <div class="bet-buttons">
-                        <button class="bet-btn up" id="btn-bet-up" onclick="placeBet('up')">
+                        <button class="bet-btn bet-btn-up" id="btn-up" onclick="placeBet('up')">
                             <i class="fas fa-arrow-up"></i>
                             UP
-                            <small style="font-size: 0.8rem; opacity: 0.9;">90% Profit</small>
                         </button>
-                        <button class="bet-btn down" id="btn-bet-down" onclick="placeBet('down')">
+                        <button class="bet-btn bet-btn-down" id="btn-down" onclick="placeBet('down')">
                             <i class="fas fa-arrow-down"></i>
                             DOWN
-                            <small style="font-size: 0.8rem; opacity: 0.9;">90% Profit</small>
                         </button>
-                    </div>
-
-                    <div id="active-bet-info" class="hidden" style="background: rgba(255,102,0,0.1); border: 1px solid var(--primary); padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center;">
-                        <div style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">
-                            <i class="fas fa-spinner fa-spin"></i> Active Bet
-                        </div>
-                        <div id="active-bet-details" style="color: white;"></div>
                     </div>
                 </div>
 
                 <!-- Trading History -->
-                <div class="bet-history" style="margin-top: 20px;">
-                    <h4 style="margin-bottom: 15px; color: var(--primary);">
-                        <i class="fas fa-history"></i> My Trading History
-                    </h4>
-                    <div id="my-bet-history">
-                        <div style="text-align: center; padding: 20px; color: #777;">
-                            <i class="fas fa-chart-line" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                            No trades yet. Start trading now!
+                <div class="history-section">
+                    <div class="history-header">
+                        <div class="history-title">Trading History</div>
+                        <span style="color: var(--primary); font-size: 0.8rem; cursor: pointer;" onclick="loadTradingHistory()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </span>
+                    </div>
+                    <div class="history-list" id="trading-history">
+                        <div style="text-align:center; color:#666; padding: 30px;">
+                            <i class="fas fa-chart-bar" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            Start trading to see history
                         </div>
                     </div>
                 </div>
-
-                <div style="margin-top: 20px;">
-                    <h3>News Feed</h3>
-                    <div id="news-feed" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
-                </div>
             </section>
 
-            <!-- Wallet -->
-            <section id="view-wallet" class="section hidden">
-                <div class="balance-card">
-                    <div class="balance-title">Total Balance</div>
-                    <div class="balance-amount"><span id="wallet-tk">0</span> TK</div>
-                    <div style="font-size: 1rem; opacity: 0.9;"><span id="wallet-pkr">0</span> PKR</div>
+            <!-- WALLET VIEW -->
+            <section id="view-wallet" class="wallet-section hidden">
+                <div class="wallet-card">
+                    <div class="wallet-balance-label">Total Balance</div>
+                    <div class="wallet-balance" id="wallet-balance">0.00</div>
+                    <div class="wallet-pkr">≈ <span id="wallet-pkr">0.00</span> PKR</div>
                 </div>
 
-                <div class="menu-grid">
-                    <div class="menu-card" onclick="window.showSection('deposit')">
-                        <span class="menu-icon text-orange"><i class="fas fa-wallet"></i></span>
+                <div class="quick-actions">
+                    <div class="action-card deposit" onclick="showSection('deposit')">
+                        <div class="action-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
                         <div>Deposit</div>
                     </div>
-                    <div class="menu-card" onclick="window.showSection('withdraw')">
-                        <span class="menu-icon text-green"><i class="fas fa-money-bill-wave"></i></span>
+                    <div class="action-card withdraw" onclick="showSection('withdraw')">
+                        <div class="action-icon">
+                            <i class="fas fa-minus"></i>
+                        </div>
                         <div>Withdraw</div>
                     </div>
-                    <div class="menu-card" onclick="window.showSection('transfer')">
-                        <span class="menu-icon text-blue"><i class="fas fa-exchange-alt"></i></span>
-                        <div>Transfer</div>
-                    </div>
-                    <div class="menu-card" onclick="window.showSection('premium')">
-                        <span class="menu-icon" style="color: gold;"><i class="fas fa-crown"></i></span>
-                        <div>Pro</div>
-                    </div>
-                </div>
-
-                <h3>Transaction History</h3>
-                <div id="transaction-list" style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
-                    <div style="text-align:center; color:#555;">Loading history...</div>
                 </div>
             </section>
 
-            <!-- Deposit -->
-            <section id="view-deposit" class="section hidden">
-                <h2 class="text-orange">Deposit Funds</h2>
+            <!-- DEPOSIT VIEW -->
+            <section id="view-deposit" class="wallet-section hidden">
+                <h2 style="margin-bottom: 20px;"><i class="fas fa-arrow-down" style="color: var(--success);"></i> Deposit</h2>
                 <div class="input-group">
-                    <label>Method</label>
-                    <select id="deposit-method" onchange="window.updateDepositDetails()">
-                        <option value="tillid">Till Id - (Raast)</option>
-                        <option value="usdt">USDT Deposit</option>
-                    </select>
+                    <label>Amount (PKR)</label>
+                    <input type="number" id="deposit-amount" placeholder="Enter amount" style="width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,212,255,0.3); border-radius: 12px; color: white; font-size: 1rem;">
                 </div>
-                
-                <div id="till-info-box" style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;">
-                    <div style="font-size: 0.8rem; color: #aaa;">Deposit To:</div>
-                    <div style="font-weight: bold; font-size: 1.1rem;" id="deposit-number">03XX-XXXXXXX</div>
-                </div>
-
-                <div id="usdt-info-box" class="hidden" style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;">
-                    <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 5px;">USDT Deposit Address (TRC20):</div>
-                    <input type="text" value="TH4ysLDzLdua4QQUb2djqCM8jt1XDSqubs" readonly style="width: 100%; background: #2a2a2a; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 0.85rem;">
-                </div>
-
-                <div class="input-group">
-                    <label>Amount Sent (PKR / USDT)</label>
-                    <input type="number" id="deposit-amount" placeholder="e.g. 500 PKR">
-                </div>
-                <button class="btn" onclick="window.submitDeposit()">Submit Deposit Request</button>
-                <button class="btn btn-outline" style="margin-top: 10px;" onclick="window.showSection('wallet')">Back</button>
+                <button class="auth-btn" onclick="submitDeposit()">Submit Deposit</button>
+                <button class="auth-btn" style="margin-top: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.2);" onclick="showSection('wallet')">Back</button>
             </section>
 
-            <!-- Withdraw -->
-            <section id="view-withdraw" class="section hidden">
-                <h2 class="text-orange">Withdraw Funds</h2>
-                <div style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <div>Available Balance: <strong id="withdraw-bal-display">0 TK</strong></div>
-                </div>
-                <div class="input-group">
-                    <label>Method</label>
-                    <select id="withdraw-method">
-                        <option value="BINNACE USDT">BINNACE USDT</option>
-                        <option value="jazzcash">JazzCash</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Account Number/ USDT-TRC20 </label>
-                    <input type="text" id="withdraw-account" placeholder="0300.. Txyz. ">
-                </div>
+            <!-- WITHDRAW VIEW -->
+            <section id="view-withdraw" class="wallet-section hidden">
+                <h2 style="margin-bottom: 20px;"><i class="fas fa-arrow-up" style="color: var(--danger);"></i> Withdraw</h2>
                 <div class="input-group">
                     <label>Amount (TK)</label>
-                    <input type="number" id="withdraw-amount" placeholder="Tk coin">
+                    <input type="number" id="withdraw-amount" placeholder="Enter amount" style="width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,212,255,0.3); border-radius: 12px; color: white; font-size: 1rem;">
                 </div>
-                <button class="btn" onclick="window.submitWithdraw()">Request Withdrawal</button>
-                <button class="btn btn-outline" style="margin-top: 10px;" onclick="window.showSection('wallet')">Back</button>
-            </section>
-
-            <!-- Transfer -->
-            <section id="view-transfer" class="section hidden">
-                <h2 class="text-orange">Transfer Coins</h2>
-                <div class="input-group">
-                    <label>Receiver Email</label>
-                    <input type="email" id="transfer-email" placeholder="user@example.com">
-                </div>
-                <div class="input-group">
-                    <label>Amount (TK)</label>
-                    <input type="number" id="transfer-amount" placeholder="Amount">
-                </div>
-                <button class="btn" onclick="window.submitTransfer()">Send Now</button>
-                <button class="btn btn-outline" style="margin-top: 10px;" onclick="window.showSection('wallet')">Back</button>
-            </section>
-
-            <!-- Premium -->
-            <section id="view-premium" class="section hidden">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <i class="fas fa-crown" style="font-size: 4rem; color: gold; margin-bottom: 15px;"></i>
-                    <h2>Go Premium</h2>
-                </div>
-                <div class="balance-card" style="text-align: center;">
-                    <div class="balance-title">Upgrade Cost</div>
-                    <div class="balance-amount">100 TK</div>
-                </div>
-                <button class="btn" onclick="window.upgradePremium()">Upgrade Now</button>
-                <button class="btn btn-outline" style="margin-top: 10px;" onclick="window.showSection('wallet')">Back</button>
-            </section>
-
-            <!-- Chat -->
-            <section id="view-chat" class="section hidden">
-                <h2>Live Support 24/7 </h2>
-                <div class="chat-box">
-                    <div class="chat-messages" id="chat-messages"></div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input" placeholder="Type a message..." style="flex: 1;">
-                        <button class="btn btn-sm" onclick="window.sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Profile -->
-            <section id="view-profile" class="section hidden">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div id="profile-avatar" class="avatar" style="width: 100px; height: 100px; margin-bottom: 10px; font-size: 2.5rem;">U</div>
-                    <h2 id="profile-name">User Name</h2>
-                    <p id="profile-email" style="color: #aaa;">tkcoin@email.com</p>
-                </div>
-
-                <button class="btn" style="background: #333;" onclick="window.logout()">Logout</button>
+                <button class="auth-btn" onclick="submitWithdraw()">Request Withdrawal</button>
+                <button class="auth-btn" style="margin-top: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.2);" onclick="showSection('wallet')">Back</button>
             </section>
 
         </main>
 
-        <nav class="bottom-nav" id="user-nav">
-            <a class="nav-item active" onclick="window.showSection('market')">
+        <!-- BOTTOM NAVIGATION - WITH TRADING BUTTON -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="showSection('home')">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item trading" onclick="showSection('trading')">
                 <i class="fas fa-chart-line"></i>
-                <span>Trade</span>
-            </a>
-            <a class="nav-item" onclick="window.showSection('wallet')">
+                <span>Trading</span>
+            </div>
+            div class="nav-item" onclick="showSection('wallet')">
                 <i class="fas fa-wallet"></i>
                 <span>Wallet</span>
-            </a>
-            <a class="nav-item" onclick="window.showSection('chat')">
-                <i class="fas fa-comment-dots"></i>
-                <span>Support</span>
-            </a>
-            <a class="nav-item" onclick="window.showSection('profile')">
-                <i class="fas fa-user"></i>
-                <span>Profile</span>
-            </a>
+            </div>
         </nav>
+
     </div>
 
     <script type="module">
@@ -1171,515 +1169,491 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let currentUserData = null;
-        let marketData = { tkPrice: 1.50, usdtRate: 280 };
-        
-        // ===== TRADING VARIABLES =====
-        let tradingStatus = { isActive: false, currentRound: 0 };
+        // Global State
+        let currentUser = null;
+        let tradingSettings = { mode: 'auto', minBet: 10, maxBet: 1000, duration: 5, payoutPercent: 90 };
         let countdownInterval = null;
+        let chartAnimationId = null;
+        let candlestickData = [];
+        let currentPrice = 100;
+        let entryPrice = null;
+        let activeBet = null;
         let timeLeft = 5;
-        let currentBet = null;
-        let candleData = [];
-        let lastPrice = 100;
-        let tradingChart = null;
+        let isChartRunning = false;
 
-        window.showToast = (msg, type = 'success') => {
+        // ===== AUTH =====
+        window.toggleAuthMode = () => {
+            const isSignup = document.getElementById('auth-btn-text').innerText === 'Login';
+            document.getElementById('auth-btn-text').innerText = isSignup ? 'Create Account' : 'Login';
+            document.getElementById('toggle-text').innerText = isSignup ? 'Already have an account? Login' : "Don't have an account? Signup";
+            document.getElementById('ref-group').classList.toggle('hidden');
+        };
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const isSignup = document.getElementById('auth-btn-text').innerText === 'Create Account';
+            
+            try {
+                if (isSignup) {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+
+        // ===== NAVIGATION =====
+        window.showSection = (section) => {
+            // Hide all sections
+            document.querySelectorAll('#main-views > section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById(`view-${section}`).classList.remove('hidden');
+            
+            // Update nav
+            const navMap = { 'home': 0, 'trading': 1, 'wallet': 2 };
+            if (navMap[section] !== undefined) {
+                document.querySelectorAll('.nav-item')[navMap[section]].classList.add('active');
+            }
+            
+            // Start trading if entering trading section
+            if (section === 'trading' && !isChartRunning) {
+                startTrading();
+            }
+        };
+
+        // ===== TRADING SYSTEM =====
+        
+        function initTrading() {
+            // Load settings
+            onValue(ref(db, 'tradingSettings'), (snap) => {
+                if (snap.exists()) {
+                    tradingSettings = { ...tradingSettings, ...snap.val() };
+                    updateTradingUI();
+                }
+            });
+        }
+
+        function updateTradingUI() {
+            document.getElementById('min-bet').innerText = tradingSettings.minBet || 10;
+            document.getElementById('max-bet').innerText = tradingSettings.maxBet || 1000;
+            
+            const badge = document.getElementById('trading-mode-badge');
+            if (tradingSettings.mode === 'loss') {
+                badge.innerText = 'LOSS MODE';
+                badge.className = 'mode-badge loss';
+            } else {
+                badge.innerText = 'AUTO MODE';
+                badge.className = 'mode-badge auto';
+            }
+        }
+
+        function startTrading() {
+            isChartRunning = true;
+            
+            // Initialize candle data
+            candlestickData = [];
+            currentPrice = 100 + Math.random() * 50;
+            for (let i = 0; i < 20; i++) {
+                candlestickData.push(generateCandle());
+            }
+            
+            // Start countdown
+            timeLeft = tradingSettings.duration || 5;
+            startCountdown();
+            
+            // Start chart animation (60fps)
+            animateChart();
+        }
+
+        function generateCandle() {
+            const open = currentPrice;
+            const change = (Math.random() - 0.5) * 10;
+            currentPrice += change;
+            const close = currentPrice;
+            const high = Math.max(open, close) + Math.random() * 5;
+            const low = Math.min(open, close) - Math.random() * 5;
+            return { open, close, high, low };
+        }
+
+        function animateChart() {
+            if (!isChartRunning) return;
+            
+            // Add new candle every 30 frames (0.5s at 60fps)
+            if (Math.random() < 0.02) {
+                candlestickData.push(generateCandle());
+                if (candlestickData.length > 30) candlestickData.shift();
+            }
+            
+            drawChart();
+            updatePriceDisplay();
+            
+            chartAnimationId = requestAnimationFrame(animateChart);
+        }
+
+        function drawChart() {
+            const canvas = document.getElementById('tradingChart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.parentElement.offsetWidth;
+            const height = canvas.parentElement.offsetHeight;
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Clear
+            ctx.fillStyle = '#0a0a0f';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Grid
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 5; i++) {
+                const y = (height / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            // Calculate scale
+            const prices = candlestickData.flatMap(c => [c.high, c.low]);
+            const minPrice = Math.min(...prices) * 0.99;
+            const maxPrice = Math.max(...prices) * 1.01;
+            const range = maxPrice - minPrice;
+            const candleWidth = width / candlestickData.length * 0.7;
+            const gap = width / candlestickData.length * 0.3;
+            
+            // Draw candles
+            candlestickData.forEach((candle, i) => {
+                const x = i * (candleWidth + gap) + gap/2;
+                const yHigh = height - ((candle.high - minPrice) / range) * height;
+                const yLow = height - ((candle.low - minPrice) / range) * height;
+                const yOpen = height - ((candle.open - minPrice) / range) * height;
+                const yClose = height - ((candle.close - minPrice) / range) * height;
+                
+                const isGreen = candle.close >= candle.open;
+                
+                // Wick
+                ctx.strokeStyle = isGreen ? '#00ff88' : '#ff0055';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x + candleWidth/2, yHigh);
+                ctx.lineTo(x + candleWidth/2, yLow);
+                ctx.stroke();
+                
+                // Body
+                ctx.fillStyle = isGreen ? '#00ff88' : '#ff0055';
+                const bodyTop = Math.min(yOpen, yClose);
+                const bodyHeight = Math.abs(yClose - yOpen) || 2;
+                ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
+                
+                // Glow effect for last candle
+                if (i === candlestickData.length - 1) {
+                    ctx.shadowColor = isGreen ? '#00ff88' : '#ff0055';
+                    ctx.shadowBlur = 20;
+                    ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
+                    ctx.shadowBlur = 0;
+                }
+            });
+        }
+
+        function updatePriceDisplay() {
+            const displayPrice = currentPrice.toFixed(2);
+            const change = ((currentPrice - 100) / 100 * 100).toFixed(2);
+            
+            document.getElementById('current-price-display').innerText = displayPrice;
+            const changeEl = document.getElementById('price-change-display');
+            changeEl.innerText = (change >= 0 ? '+' : '') + change + '%';
+            changeEl.className = 'price-info-value ' + (change >= 0 ? 'up' : 'down');
+        }
+
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('countdown').innerText = timeLeft.toString().padStart(2, '0');
+                
+                // Update colors based on time
+                const timerEl = document.getElementById('countdown');
+                if (timeLeft <= 2) {
+                    timerEl.style.background = 'linear-gradient(180deg, #ff0055, #ff5500)';
+                    timerEl.style.webkitBackgroundClip = 'text';
+                } else {
+                    timerEl.style.background = 'linear-gradient(180deg, #00d4ff, #ff00a0)';
+                    timerEl.style.webkitBackgroundClip = 'text';
+                }
+                
+                // Lock buttons near end
+                if (timeLeft <= 1) {
+                    document.getElementById('btn-up').disabled = true;
+                    document.getElementById('btn-down').disabled = true;
+                } else if (!activeBet) {
+                    document.getElementById('btn-up').disabled = false;
+                    document.getElementById('btn-down').disabled = false;
+                }
+                
+                if (timeLeft <= 0) {
+                    settleRound();
+                    timeLeft = tradingSettings.duration || 5;
+                }
+            }, 1000);
+        }
+
+        // ===== BETTING =====
+        
+        window.setBetAmount = (amount) => {
+            document.getElementById('bet-amount').value = amount;
+        };
+
+        window.placeBet = (direction) => {
+            if (activeBet) {
+                showToast('You already have an active bet!', 'error');
+                return;
+            }
+            
+            if (timeLeft <= 1) {
+                showToast('Too late! Wait for next round.', 'error');
+                return;
+            }
+            
+            const amount = parseFloat(document.getElementById('bet-amount').value);
+            const minBet = tradingSettings.minBet || 10;
+            const maxBet = tradingSettings.maxBet || 1000;
+            
+            if (!amount || amount < minBet) {
+                showToast(`Minimum bet is ${minBet} TK`, 'error');
+                return;
+            }
+            
+            if (amount > maxBet) {
+                showToast(`Maximum bet is ${maxBet} TK`, 'error');
+                return;
+            }
+            
+            if (!currentUser || amount > (currentUser.balanceTK || 0)) {
+                showToast('Insufficient balance!', 'error');
+                return;
+            }
+            
+            // Record bet
+            entryPrice = currentPrice;
+            activeBet = {
+                direction,
+                amount,
+                entryPrice,
+                timestamp: Date.now()
+            };
+            
+            // Deduct balance
+            const newBalance = (currentUser.balanceTK || 0) - amount;
+            update(ref(db, 'users/' + currentUser.uid + '/balanceTK'), newBalance);
+            
+            // Show active bet
+            document.getElementById('active-bet-box').classList.add('show');
+            document.getElementById('active-bet-amount').innerText = amount;
+            const dirEl = document.getElementById('active-bet-direction');
+            dirEl.innerHTML = `<i class="fas fa-arrow-${direction}"></i> ${direction.toUpperCase()}`;
+            dirEl.className = 'active-bet-direction ' + direction;
+            
+            // Disable buttons
+            document.getElementById('btn-up').disabled = true;
+            document.getElementById('btn-down').disabled = true;
+            
+            // Save to Firebase
+            const betRef = push(ref(db, 'activeBets'));
+            set(betRef, {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: currentUser.name,
+                ...activeBet,
+                status: 'pending'
+            });
+            
+            showToast(`Bet placed: ${direction.toUpperCase()} ${amount} TK`, 'success');
+        };
+
+        function settleRound() {
+            if (!activeBet) return;
+            
+            const exitPrice = currentPrice;
+            const { direction, amount, entryPrice } = activeBet;
+            
+            let result, winAmount = 0;
+            
+            // Determine result
+            if (tradingSettings.mode === 'loss') {
+                result = 'loss';
+            } else {
+                const priceUp = exitPrice > entryPrice;
+                if (direction === 'up' && priceUp) result = 'win';
+                else if (direction === 'down' && !priceUp) result = 'win';
+                else result = 'loss';
+            }
+            
+            // Calculate payout
+            if (result === 'win') {
+                const payout = tradingSettings.payoutPercent || 90;
+                winAmount = amount * (payout / 100);
+                const totalReturn = amount + winAmount;
+                
+                update(ref(db, 'users/' + currentUser.uid + '/balanceTK'), (currentUser.balanceTK || 0) + totalReturn);
+                showToast(`WIN! +${winAmount.toFixed(2)} TK`, 'success');
+            } else {
+                showToast(`LOSS! -${amount.toFixed(2)} TK`, 'error');
+            }
+            
+            // Save history
+            push(ref(db, 'betHistory'), {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: currentUser.name,
+                ...activeBet,
+                exitPrice,
+                result,
+                winAmount,
+                timestamp: Date.now(),
+                date: new Date().toLocaleString()
+            });
+            
+            // Reset
+            activeBet = null;
+            entryPrice = null;
+            document.getElementById('active-bet-box').classList.remove('show');
+            document.getElementById('bet-amount').value = '';
+            
+            loadTradingHistory();
+        }
+
+        function loadTradingHistory() {
+            if (!currentUser) return;
+            
+            onValue(ref(db, 'betHistory'), (snap) => {
+                const data = snap.val();
+                const container = document.getElementById('trading-history');
+                
+                if (!data) {
+                    container.innerHTML = '<div style="text-align:center; color:#666; padding: 30px;">No trades yet</div>';
+                    return;
+                }
+                
+                const userBets = Object.values(data)
+                    .filter(b => b.userId === currentUser.uid)
+                    .sort((a, b) => b.timestamp - a.timestamp)
+                    .slice(0, 10);
+                
+                if (userBets.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; color:#666; padding: 30px;">No trades yet</div>';
+                    return;
+                }
+                
+                container.innerHTML = userBets.map(bet => `
+                    <div class="history-item ${bet.result}">
+                        <div class="history-info">
+                            <div class="history-direction ${bet.direction}">
+                                <i class="fas fa-arrow-${bet.direction}"></i>
+                                ${bet.direction.toUpperCase()}
+                            </div>
+                            <div class="history-time">${new Date(bet.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                        <div class="history-result">
+                            <div class="history-amount">${bet.amount} TK</div>
+                            <div class="history-pnl ${bet.result}">
+                                ${bet.result === 'win' ? '+' + bet.winAmount.toFixed(2) : '-' + bet.amount.toFixed(2)} TK
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }, { onlyOnce: true });
+        }
+
+        // ===== WALLET FUNCTIONS =====
+        
+        window.submitDeposit = () => {
+            const amount = document.getElementById('deposit-amount').value;
+            if (!amount || amount <= 0) {
+                showToast('Enter valid amount', 'error');
+                return;
+            }
+            showToast('Deposit request submitted!', 'success');
+            document.getElementById('deposit-amount').value = '';
+        };
+
+        window.submitWithdraw = () => {
+            const amount = document.getElementById('withdraw-amount').value;
+            if (!amount || amount <= 0) {
+                showToast('Enter valid amount', 'error');
+                return;
+            }
+            if (parseFloat(amount) > (currentUser?.balanceTK || 0)) {
+                showToast('Insufficient balance', 'error');
+                return;
+            }
+            showToast('Withdrawal request submitted!', 'success');
+            document.getElementById('withdraw-amount').value = '';
+        };
+
+        // ===== UTILS =====
+        
+        function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.style.borderLeftColor = type === 'error' ? 'var(--danger)' : 'var(--primary)';
+            toast.style.borderLeftColor = type === 'error' ? '#ff0055' : '#00d4ff';
             toast.innerText = msg;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
 
-        window.closePopup = () => {
-            document.getElementById('receive-popup').classList.add('hidden');
-        }
-
-        window.toggleAuthMode = () => {
-            // Toggle logic here
-        };
-
-        function initApp() {
-            // Start coin rain
-            startCoinRain();
-            
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    checkAndCreateUserInDB(user);
-                } else {
-                    document.getElementById('auth-screen').classList.remove('hidden');
-                    document.getElementById('app-container').classList.add('hidden');
-                }
-            });
-        }
-
-        function startCoinRain() {
-            const container = document.getElementById('coins-container');
-            if (!container) return;
-            
-            setInterval(() => {
-                if (container.style.display === 'none') return;
-                const coin = document.createElement('i');
-                coin.className = 'fas fa-coin coin';
-                coin.style.left = Math.random() * 100 + '%';
-                coin.style.animationDuration = (Math.random() * 3 + 5) + 's';
-                container.appendChild(coin);
-                setTimeout(() => coin.remove(), 8000);
-            }, 1000);
-        }
-
-        function checkAndCreateUserInDB(firebaseUser) {
-            const userRef = ref(db, 'users/' + firebaseUser.uid);
-            get(userRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    currentUserData = snapshot.val();
-                    currentUserData.uid = firebaseUser.uid;
-                    loginSuccess(currentUserData);
-                } else {
-                    // Create new user
-                    const newUser = {
-                        name: firebaseUser.email.split('@')[0],
-                        email: firebaseUser.email,
-                        balanceTK: 0,
-                        createdAt: new Date().toISOString()
-                    };
-                    set(userRef, newUser).then(() => {
-                        currentUserData = newUser;
-                        currentUserData.uid = firebaseUser.uid;
-                        loginSuccess(currentUserData);
-                    });
-                }
-            });
-        }
-
-        function loginSuccess(user) {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            
-            // Update UI
-            updateUI();
-            
-            // Listen to trading status
-            onValue(ref(db, 'trading/status'), (snapshot) => {
-                if (snapshot.exists()) {
-                    tradingStatus = snapshot.val();
-                    updateTradingUI();
-                }
-            });
-            
-            // Listen to current bets for pools
-            onValue(ref(db, 'trading/currentBets'), (snapshot) => {
-                updatePools(snapshot.val());
-            });
-            
-            // Start trading countdown
-            startTradingCountdown();
-            
-            // Initialize candle chart
-            initTradingChart();
-            
-            // Load user's bet history
-            loadMyBetHistory();
-        }
-
-        // ===== TRADING FUNCTIONS =====
-
-        function updateTradingUI() {
-            const statusDot = document.getElementById('trading-status-dot');
-            const statusText = document.getElementById('trading-status-text');
-            
-            if (tradingStatus.isActive) {
-                statusDot.style.background = 'var(--success)';
-                statusDot.style.boxShadow = '0 0 10px var(--success)';
-                statusText.innerText = 'Live';
-                statusText.style.color = 'var(--success)';
-            } else {
-                statusDot.style.background = 'var(--danger)';
-                statusDot.style.boxShadow = '0 0 10px var(--danger)';
-                statusText.innerText = 'Paused';
-                statusText.style.color = 'var(--danger)';
-            }
-        }
-
-        function startTradingCountdown() {
-            if (countdownInterval) clearInterval(countdownInterval);
-            
-            timeLeft = 5;
-            updateCountdownDisplay();
-            
-            countdownInterval = setInterval(() => {
-                timeLeft--;
-                updateCountdownDisplay();
-                
-                if (timeLeft <= 0) {
-                    // Round ended, check result
-                    if (currentBet) {
-                        checkBetResult();
-                    }
-                    timeLeft = 5;
-                    currentBet = null;
-                    updateBetButtons();
-                }
-            }, 1000);
-        }
-
-        function updateCountdownDisplay() {
-            const timer = document.getElementById('countdown-timer');
-            timer.innerText = timeLeft.toString().padStart(2, '0');
-            
-            // Visual effect for last 3 seconds
-            if (timeLeft <= 3) {
-                timer.style.color = 'var(--danger)';
-                timer.style.textShadow = '0 0 30px var(--danger)';
-            } else {
-                timer.style.color = 'var(--primary)';
-                timer.style.textShadow = '0 0 20px rgba(255,102,0,0.5)';
-            }
-        }
-
-        function initTradingChart() {
-            const canvas = document.getElementById('tradingCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Set canvas size
-            canvas.width = canvas.parentElement.offsetWidth;
-            canvas.height = canvas.parentElement.offsetHeight;
-            
-            // Initialize with random data
-            candleData = [];
-            let price = 100;
-            for (let i = 0; i < 20; i++) {
-                price = price + (Math.random() - 0.5) * 5;
-                candleData.push({
-                    open: price - Math.random() * 2,
-                    close: price,
-                    high: price + Math.random() * 2,
-                    low: price - Math.random() * 2
-                });
-            }
-            
-            drawCandles();
-            
-            // Update candles every second
-            setInterval(() => {
-                // Add new candle
-                const lastClose = candleData[candleData.length - 1].close;
-                const change = (Math.random() - 0.5) * 4;
-                const newClose = lastClose + change;
-                
-                candleData.push({
-                    open: lastClose,
-                    close: newClose,
-                    high: Math.max(lastClose, newClose) + Math.random(),
-                    low: Math.min(lastClose, newClose) - Math.random()
-                });
-                
-                if (candleData.length > 20) candleData.shift();
-                
-                drawCandles();
-                updateCurrentPrice(newClose, change);
-            }, 1000);
-        }
-
-        function drawCandles() {
-            const canvas = document.getElementById('tradingCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const candleWidth = canvas.width / 25;
-            const padding = candleWidth / 2;
-            
-            // Find min and max for scaling
-            let min = Infinity, max = -Infinity;
-            candleData.forEach(c => {
-                min = Math.min(min, c.low);
-                max = Math.max(max, c.high);
-            });
-            
-            const range = max - min || 1;
-            
-            candleData.forEach((candle, i) => {
-                const x = padding + i * (canvas.width / 20);
-                const isGreen = candle.close >= candle.open;
-                
-                // Draw wick
-                ctx.strokeStyle = isGreen ? '#00c853' : '#ff3d00';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(x + candleWidth/2, canvas.height - ((candle.high - min) / range) * canvas.height);
-                ctx.lineTo(x + candleWidth/2, canvas.height - ((candle.low - min) / range) * canvas.height);
-                ctx.stroke();
-                
-                // Draw body
-                ctx.fillStyle = isGreen ? '#00c853' : '#ff3d00';
-                const bodyTop = canvas.height - ((Math.max(candle.open, candle.close) - min) / range) * canvas.height;
-                const bodyHeight = Math.abs(candle.close - candle.open) / range * canvas.height || 2;
-                ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
-            });
-        }
-
-        function updateCurrentPrice(price, change) {
-            lastPrice = price;
-            const priceEl = document.getElementById('current-price');
-            const changeEl = document.getElementById('price-change');
-            
-            priceEl.innerText = price.toFixed(2);
-            
-            const percent = ((change / price) * 100).toFixed(2);
-            if (change >= 0) {
-                changeEl.innerHTML = `<i class="fas fa-arrow-up"></i> +${percent}%`;
-                changeEl.className = 'price-change price-up';
-                priceEl.style.color = 'var(--success)';
-            } else {
-                changeEl.innerHTML = `<i class="fas fa-arrow-down"></i> ${percent}%`;
-                changeEl.className = 'price-change price-down';
-                priceEl.style.color = 'var(--danger)';
-            }
-        }
-
-        function updatePools(bets) {
-            let upTotal = 0, downTotal = 0;
-            
-            if (bets) {
-                Object.values(bets).forEach(bet => {
-                    if (bet.direction === 'up') upTotal += bet.amount;
-                    else downTotal += bet.amount;
-                });
-            }
-            
-            document.getElementById('up-pool').innerText = upTotal + ' TK';
-            document.getElementById('down-pool').innerText = downTotal + ' TK';
-            document.getElementById('total-pool').innerText = (upTotal + downTotal) + ' TK';
-        }
-
-        window.setBetAmount = (amount) => {
-            document.getElementById('bet-amount').value = amount;
-            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        };
-
-        window.placeBet = (direction) => {
-            if (!tradingStatus.isActive) {
-                showToast('Trading is currently paused', 'error');
-                return;
-            }
-            
-            if (currentBet) {
-                showToast('You already have an active bet', 'error');
-                return;
-            }
-            
-            const amount = parseFloat(document.getElementById('bet-amount').value);
-            if (!amount || amount <= 0) {
-                showToast('Please enter bet amount', 'error');
-                return;
-            }
-            
-            if (amount > currentUserData.balanceTK) {
-                showToast('Insufficient balance', 'error');
-                return;
-            }
-            
-            // Place bet
-            const betData = {
-                userId: currentUserData.uid,
-                userName: currentUserData.name,
-                amount: amount,
-                direction: direction,
-                timestamp: Date.now(),
-                round: tradingStatus.currentRound || 0
-            };
-            
-            push(ref(db, 'trading/currentBets'), betData).then(() => {
-                // Deduct balance immediately
-                const newBalance = currentUserData.balanceTK - amount;
-                update(ref(db, 'users/' + currentUserData.uid), {
-                    balanceTK: newBalance
-                });
-                
-                currentBet = betData;
-                updateBetButtons();
-                showToast(`Bet placed: ${amount} TK on ${direction.toUpperCase()}`);
-                
-                // Show active bet info
-                document.getElementById('active-bet-info').classList.remove('hidden');
-                document.getElementById('active-bet-details').innerHTML = `
-                    ${amount} TK on <span class="${direction === 'up' ? 'text-green' : 'text-red'}">${direction.toUpperCase()}</span>
-                `;
-            });
-        };
-
-        function updateBetButtons() {
-            const upBtn = document.getElementById('btn-bet-up');
-            const downBtn = document.getElementById('btn-bet-down');
-            
-            if (currentBet) {
-                upBtn.disabled = true;
-                downBtn.disabled = true;
-                
-                if (currentBet.direction === 'up') {
-                    upBtn.classList.add('placed');
-                    downBtn.classList.remove('placed');
-                } else {
-                    downBtn.classList.add('placed');
-                    upBtn.classList.remove('placed');
-                }
-            } else {
-                upBtn.disabled = false;
-                downBtn.disabled = false;
-                upBtn.classList.remove('placed');
-                downBtn.classList.remove('placed');
-                document.getElementById('active-bet-info').classList.add('hidden');
-            }
-        }
-
-        function checkBetResult() {
-            // Get last result from Firebase
-            get(ref(db, 'trading/lastResult')).then(snapshot => {
-                if (!snapshot.exists()) return;
-                
-                const result = snapshot.val();
-                const won = currentBet.direction === result.outcome;
-                
-                if (won) {
-                    const winAmount = currentBet.amount * 1.9; // 90% profit
-                    const newBalance = currentUserData.balanceTK + winAmount;
-                    
-                    update(ref(db, 'users/' + currentUserData.uid), {
-                        balanceTK: newBalance
-                    });
-                    
-                    // Add to history
-                    addToBetHistory(currentBet, result.outcome, winAmount - currentBet.amount, true);
-                    
-                    showToast(`You WON! +${(winAmount - currentBet.amount).toFixed(2)} TK`, 'success');
-                } else {
-                    addToBetHistory(currentBet, result.outcome, -currentBet.amount, false);
-                    showToast('You lost. Better luck next time!', 'error');
-                }
-                
-                currentBet = null;
-                updateBetButtons();
-                loadMyBetHistory();
-            });
-        }
-
-        function addToBetHistory(bet, outcome, profit, won) {
-            const historyRef = push(ref(db, `users/${currentUserData.uid}/tradingHistory`));
-            set(historyRef, {
-                amount: bet.amount,
-                direction: bet.direction,
-                outcome: outcome,
-                profit: profit,
-                won: won,
-                timestamp: Date.now(),
-                date: new Date().toLocaleString()
-            });
-        }
-
-        function loadMyBetHistory() {
-            const container = document.getElementById('my-bet-history');
-            
-            onValue(ref(db, `users/${currentUserData.uid}/tradingHistory`), (snapshot) => {
-                const data = snapshot.val();
-                
-                if (!data) {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: 20px; color: #777;">
-                            <i class="fas fa-chart-line" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                            No trades yet. Start trading now!
-                        </div>
-                    `;
-                    return;
-                }
-                
-                const bets = Object.values(data).sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
-                
-                let html = '';
-                bets.forEach(bet => {
-                    const resultClass = bet.won ? 'bet-result-win' : 'bet-result-loss';
-                    const resultText = bet.won ? 'WIN' : 'LOSS';
-                    const profitText = bet.won ? `+${bet.profit.toFixed(2)}` : bet.profit.toFixed(2);
-                    
-                    html += `
-                        <div class="bet-history-item">
-                            <div>
-                                <span class="direction-badge ${bet.direction}">
-                                    <i class="fas fa-arrow-${bet.direction}"></i> ${bet.direction.toUpperCase()}
-                                </span>
-                                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                    ${new Date(bet.timestamp).toLocaleTimeString()}
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-weight: bold;">${bet.amount} TK</div>
-                                <div class="${resultClass}">
-                                    ${resultText} ${profitText} TK
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-            });
-        }
-
-        // ===== OTHER FUNCTIONS =====
-
-        window.showSection = (sectionId) => {
-            document.querySelectorAll('#user-views .section').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`view-${sectionId}`).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            const navMap = { 'market': 0, 'wallet': 1, 'chat': 2, 'profile': 3 };
-            const navIndex = navMap[sectionId];
-            if (navIndex !== undefined) {
-                document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
-            }
-        };
-
         function updateUI() {
-            if (!currentUserData) return;
+            if (!currentUser) return;
             
-            document.getElementById('header-name').innerText = currentUserData.name;
-            document.getElementById('header-balance').innerText = currentUserData.balanceTK.toFixed(2) + ' TK';
-            document.getElementById('wallet-tk').innerText = currentUserData.balanceTK.toFixed(2);
-            document.getElementById('withdraw-bal-display').innerText = currentUserData.balanceTK.toFixed(2) + ' TK';
+            const balance = (currentUser.balanceTK || 0).toFixed(2);
+            const pkr = (balance * 280).toFixed(2);
             
-            const pkrValue = currentUserData.balanceTK * marketData.tkPrice * marketData.usdtRate;
-            document.getElementById('wallet-pkr').innerText = pkrValue.toFixed(2);
-            
-            document.getElementById('profile-name').innerText = currentUserData.name;
-            document.getElementById('profile-email').innerText = currentUserData.email;
+            document.getElementById('header-balance').innerText = balance;
+            document.getElementById('wallet-balance').innerText = balance;
+            document.getElementById('wallet-pkr').innerText = pkr;
         }
 
-        window.submitDeposit = () => {
-            showToast('Deposit request submitted!');
-        };
+        // ===== INIT =====
+        
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                
+                // Load user data
+                onValue(ref(db, 'users/' + user.uid), (snap) => {
+                    currentUser = { ...snap.val(), uid: user.uid };
+                    updateUI();
+                });
+                
+                // Init trading
+                initTrading();
+                
+                // Start with home
+                showSection('home');
+                
+            } else {
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('hidden');
+                isChartRunning = false;
+                if (countdownInterval) clearInterval(countdownInterval);
+                if (chartAnimationId) cancelAnimationFrame(chartAnimationId);
+            }
+        });
 
-        window.submitWithdraw = () => {
-            showToast('Withdrawal requested!');
-        };
-
-        window.submitTransfer = () => {
-            showToast('Transfer completed!');
-        };
-
-        window.upgradePremium = () => {
-            showToast('Upgraded to Premium!');
-        };
-
-        window.logout = () => {
-            signOut(auth).then(() => {
-                window.location.reload();
-            });
-        };
-
-        initApp();
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            isChartRunning = false;
+            if (countdownInterval) clearInterval(countdownInterval);
+            if (chartAnimationId) cancelAnimationFrame(chartAnimationId);
+        });
     </script>
 </body>
 </html>
